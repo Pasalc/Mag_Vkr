@@ -1,0 +1,149 @@
+---
+- name: Configure nodes
+  hosts: all
+  gather_facts: no
+  vars_files:
+    - defaults/main.yaml
+  tasks:
+    - name: Start docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+    - name: Add docker
+      shell: rc-update add docker default 
+    - name: Load image tarball
+      copy:
+        src: files/hcs.tar.gz
+        dest: "{{image_path}}"
+    - name: Load image
+      docker_image:
+        name: "{{ docker_image }}"
+        load_path: "{{ image_path }}"
+        source: load
+    - name: Sign image
+      shell: hvs_sign
+    - name: Configure /etc/corosync/corosync.conf
+      template:
+        src: templates/corosync.j2
+        dest: /etc/corosync/corosync.conf
+    - name: Create /data/hcs/ directory
+      file:
+        path: /data/hcs
+        state: directory
+    - name: Create /var/log/corosync/ directory
+      file:
+        path: /var/log/corosync/
+        state: directory
+    - name: Copy parallax-1.0.6-py3.8.egg and easy-install.pth
+      block:
+        - name: Copy parallax
+          copy:
+            src: files/parallax-1.0.6-py3.8.egg
+            dest: "{{ulib}}"
+        - name: Copy easy-install.pth
+          copy:
+            src: files/easy-install.pth
+            dest: "{{ulib}}"
+    - name: corosync/pacemaker services
+      block:
+        - name: Start Corosync  
+          ansible.builtin.service:
+            name: corosync
+            state: started
+        - name: Start pacemaker  
+          ansible.builtin.service:
+            name: pacemaker
+            state: started
+        - name: Add pacemaker to default level
+          shell: rc-update add pacemaker default
+    - name:  Add nic in ovs
+      debug:
+        msg: "Not implemented"
+  tags: configure_nodes
+- name: Configure HA hcs
+  hosts: master
+  gather_facts: no
+  vars_files:
+    - defaults/main.yaml
+  tasks:
+    - name: Make shared FS
+      block: 
+        - name: Change global_filter in lvm.conf
+          replace:
+            path: /etc/lvm/lvm.conf
+            regexp: '^global_filter.*'
+            replace: 'global_filter = [ {{pv_devices}}, "r|.*|" ]'
+            backup: yes
+          when: pv_devices is defined
+        - name: Create new VG
+          lvg:
+            vg: "{{vg_name}}"
+            pvs: "{{pv_path}}"
+        - name: Extend the logical volume to consume all remaining space in the volume group
+          community.general.lvol:
+            vg: "{{vg_name}}"
+            lv: "{{lv_name}}"
+            size: +100%FREE
+        - name: Create xfs 
+          shell: mkfs.xfs /dev/{{vg_name}}/{{ lv_name }}
+      tags: create_FS
+    - name: Populate future volume
+      block: 
+        - name: Run {{ docker_image }} 
+          docker_container:
+            name: "{{ container_name }}"
+            image: "{{ docker_image }}"
+            network_mode: host
+            stop_timeout: 90
+            security_opts: "seccomp:unconfined"
+            restart_policy: "always"
+            volumes:
+              - "{{ hvol_vol }}:/hvol"
+              - /var/tmp:/var/tmp
+            pull: false
+            state: started
+        - name: Sleep till done(currently just sleep 90 seconds)
+          shell: sleep 90
+        - name: Stop {{ container_name }} container
+          docker_container:
+            name: "{{ container_name }}"
+            state: stopped
+            timeout: 100
+        - name: Remove {{ container_name }} container
+          docker_container:
+            name: "{{ container_name }}"
+            state: absent
+            timeout: 100
+        - name: Mount {{hcs_dir}}
+          mount:
+            path: "{{ hcs_dir }}"
+            src: "/dev/{{vg_name}}/{{lv_name}}"
+            fstype: "{{fstype}}"
+            state: mounted
+        - name: Create {{hcs_dir}}/hvol
+          file:
+            path: "{{hcs_dir}}/hvol"
+            state: directory
+        - name: Copy files from volume
+          shell: cp -ar /data/0/docker/volumes/{{ hvol_vol }}/_data/* {{hcs_dir}}/hvol
+      tags: populate_volume
+    - name: Configure crm
+      block:
+        - name: Create STONITH primitive
+          shell: crm configure primitive {{ stonith_name }} {{ stonith_module }} params hostlist={{ nodes }}
+          vars: 
+            nodes: "\"{{ groups['all'] | map('extract', hostvars, 'inventory_hostname') | join(' ') }}\""
+        - name: Clone fencing  from stonith
+          shell: crm configure clone fencing {{stonith_name}}
+        - name: Activate volume group
+          shell: crm configure primitive hcs_lvm LVM params volgrpname={{vg_name}} op monitor timeout=30 interval=10
+        - name: Mount /data/hcs
+          shell: crm configure primitive fs_work Filesystem params device="/dev/{{vg_name}}/{{lv_name}}" directory="{{hcs_dir}}" fstype=xfs op monitor interval=10s
+        - name: Start container
+          shell: crm configure primitive docker_start docker params image="{{docker_image}}" name={{container_name}} run_opts="--network=host --restart=always --security-opt=seccomp:unconfined -v /var/tmp:/var/tmp -v {{hcs_dir}}/hvol:/hvol --stop-timeout=90" meta target-role=Started
+        - name: Set float IP
+          shell: crm configure primitive vip_sgu IPaddr2 params ip={{FLOAT_IP}} cidr_netmask={{FLOAT_NETMASK}} nic={{FLOAT_NIC}} op monitor interval=10 timeout=20
+        - name: Make group
+          shell: crm configure group hcs hcs_lvm fs_work docker_start vip_sgu
+        - name: Remove later
+          shell: crm configure commit

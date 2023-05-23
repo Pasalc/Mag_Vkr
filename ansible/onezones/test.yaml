@@ -1,0 +1,70 @@
+---
+- name: Start all containers
+  hosts: all
+  gather_facts: no
+  vars_files:
+    - defaults/main.yaml
+  tasks:
+    - name: Create ansible directory for docker
+      file:
+        path: /var/tmp/ansible
+        state: directory
+        owner: oneadmin
+        group: oneadmin
+    - name: Start Container 
+      docker_container:
+        name: "{{ container_name }}"
+        image: "{{ docker_image }}"
+        network_mode: host
+        stop_timeout: 90
+        security_opts: "seccomp:unconfined"
+        restart_policy: "always"
+        volumes:
+          - hvol:/hvol
+          - /var/tmp:/var/tmp
+        pull: false
+        state: started
+- name: Setup master zone
+  hosts: master
+  gather_facts: no
+  vars_files:
+    - defaults/main.yaml
+  tasks:
+    - name: Configure /etc/one/oned.conf
+      include_role: 
+        name: oned_configure
+    - name: Restart oned
+      include_role:
+        name: oned_restart
+    - name: Update zones endpoints
+      include_role:
+        name: endpoint_update
+      vars:
+        zone_name: "{{ hostvars[item]['zone'] | default(item) }}"
+        endpoint_ip: "{{ hostvars[item]['endpoint'] | default(hostvars[item]['ansible_host']) }}"
+        host_name: "{{ item }}"
+      loop: "{{ groups['slaves'] }} + {{ groups['master'] }}"
+    - name: Backup federation table to host
+      include_role:
+        name: federationDB_backup
+    - name: Fetch /var/lib/one/.one from docker to localhost
+      include_role:
+        name: dotOneToHost
+- name: Setup slave zones
+  hosts: slaves
+  gather_facts: no
+  vars_files:
+    - defaults/main.yaml
+  tasks:
+    - name: Configure /etc/one/oned.conf
+      include_role:
+        name: oned_configure
+    - name: Restore from federation table backup
+      include_role:
+        name: federationDB_restore
+    - name: Copy .one from localhost to container
+      include_role:
+        name: dotOneToSlaves
+    - name: Restart oned
+      include_role:
+        name: oned_restart

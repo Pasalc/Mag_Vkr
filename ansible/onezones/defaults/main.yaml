@@ -1,0 +1,22 @@
+#Change docker_image version to your version (check with `docker images`)
+container_name: "hcs"
+docker_image: "hcs:latest"
+
+onezone: "/usr/bin/onezone"
+bash: "/bin/bash"
+
+endpoint_path: /var/tmp/ansible/zone.tmpl
+oned_path: /var/tmp/ansible/oned.conf.ansible
+
+fedDB_path_docker: /tmp/fed.sql
+fedDB_path: /var/tmp/ansible/fed.sql
+fedDB_path_local: files/fed.sql
+
+dotOne_path_docker: /var/lib/one/.one/
+dotOne_path: /var/tmp/ansible/dotOne/
+dotOne_path_local: files/dotOne/
+
+#Change this if changed mysql default user/pass
+onedb_user: oneadmin
+onedb_pass: horizon
+master_ip: "{{ hostvars[groups['master'][0]]['endpoint'] | default(hostvars[groups['master'][0]]['ansible_host']) }}"

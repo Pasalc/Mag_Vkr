@@ -1,0 +1,37 @@
+# Totem Protocol Configuration
+totem {
+  version: 2
+  cluster_name: {{NAMECLUSTER}}
+  secauth: off
+  bindnetaddr: {{BINDNET}}
+  transport: udpu
+}
+ 
+# Nodelist - Server List
+nodelist {
+{% for host in groups['all'] %}
+  node{
+      ring0_addr: {{ hostvars[host]['inventory_hostname'] }}
+      nodeid: {{ loop.index }}
+  }
+{% endfor %}
+}
+ 
+# Quorum configuration
+quorum {
+  provider: corosync_votequorum
+  two_node: 0
+}
+ 
+# Corosync Log configuration
+logging {
+  to_logfile: yes
+  logfile: /var/log/corosync/corosync.log
+  to_syslog: yes
+  debug: on
+  timestamp: on
+}
+ 
+service {
+}
+

@@ -1,0 +1,49 @@
+---
+- name: Test things
+  hosts: master
+  gather_facts: no
+  vars_files:
+    - defaults/main.yaml
+  tasks:
+    - name: Create master zone template
+      template: 
+        src: templates/zone.j2
+        dest: /tmp/zone.tmpl
+      vars: 
+        zone_name: "{{ zone | default(item) }}"
+        endpoint_ip: "{{ hostvars[item]['endpoint'] | default(hostvars[item]['ansible_host']) }}"
+      loop: "{{ groups['slaves'] }}"
+    - name: Start Container
+      docker_container:
+        name: "{{ container_name }}"
+        image: "{{ docker_image }}"
+        pull: false
+        state: started
+    - name: Generate oned
+      template:
+        src: templates/oned.j2
+        dest: /tmp/oned.conf.ansible
+    - name: Copy oned to container
+      docker_container:
+        name: "{{ container_name }}"
+        copy:
+          src: /tmp/oned.conf.ansible
+          dest: /oned.conf
+    - name: Update master zone ip
+      community.docker.docker_container_exec:
+        container: "{{ container_name }}"
+        command: /bin/onezone update {{ master_id }} /tmp/masterzone.tmpl
+        register: result
+    - name: Onezone master update Stdout
+      debug:
+        var: result.stdout
+    - name: Add slave zones
+      community.docker.docker_container_exec:
+        name: "{{ container_name }}"
+        command: /bin/bash -c "echo {{ item }}"
+        register: result
+      loop: "{{ groups['slaves'] }}"
+    - name: Print Stdout
+      debug:
+        var: result.stdout
+

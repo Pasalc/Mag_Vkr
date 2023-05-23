@@ -1,0 +1,24 @@
+---
+- name: Generate zone file for {{ zone_name }}
+  template:
+    src: templates/zone.j2
+    dest: "{{ endpoint_path }}"
+- name: Copy zone file to container
+  shell: docker cp {{ endpoint_path }} {{ container_name }}:{{ endpoint_path }}
+- name: Try create zone {{ zone_name }}
+  community.docker.docker_container_exec:
+    container: "{{ container_name }}"
+    command: "{{ onezone }} create {{ endpoint_path }}"
+- name: Get {{ zone_name }} id
+  community.docker.docker_container_exec:
+    container: "{{ container_name }}"
+    command: "{{ onezone }} list --xml | {{ xmllint }} --xpath '//ZONE[NAME='{{ zone_name}}']/ID/text()' -"
+    register: zone_id
+- name: Set ansible zone_id var for "{{ host_name }}"
+  vars:
+    hostvars[ "{{ host_name }}" ]['zone_id']: "{{ zone_id }}"
+  when: host_name is defined
+- name: Update endpoint of zone {{ zone_id }}
+  community.docker.docker_container_exec:
+    container: "{{ container_name }}"
+    command: "{{ onezone }} update {{ zone_id }} {{ endpoint_path }}"

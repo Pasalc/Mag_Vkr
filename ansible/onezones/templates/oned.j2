@@ -1,0 +1,561 @@
+#*******************************************************************************
+#                       Horizon Control System Configuration file
+#*******************************************************************************
+
+LOG = [
+  SYSTEM      = "hcslog",
+  DEBUG_LEVEL = 2
+]
+
+MANAGER_TIMER = 5
+
+MONITORING_INTERVAL = 5
+MONITORING_THREADS  = 50
+
+HOST_PER_INTERVAL               = 15
+HOST_MONITORING_EXPIRATION_TIME = 43200
+
+#VM_INDIVIDUAL_MONITORING      = "no"
+VM_PER_INTERVAL               = 10
+VM_MONITORING_EXPIRATION_TIME = 14400
+
+SCRIPTS_REMOTE_DIR=/var/tmp/one
+
+PORT = 2633
+ONE_HOST = localhost
+
+LISTEN_ADDRESS = "0.0.0.0"
+
+# DB = [ BACKEND = "sqlite" ]
+
+DB = [ BACKEND = "mysql",
+       SERVER  = "localhost",
+       PORT    = 3306,
+       PASSWD  = "horizon",
+       DB_NAME = "opennebula" ]
+
+VNC_PORTS = [
+    START    = 5900
+#    RESERVED = "6800, 6801, 6810:6820, 9869"
+]
+
+#VM_SUBMIT_ON_HOLD = "NO"
+
+FEDERATION = [
+    MODE          = "{{ federation_mode  }}",
+    ZONE_ID       = {{ zone_id }}
+    {% if inventory_hostname not in groups['master'] %}
+    MASTER_ONED = "http://{{ master_ip }}:2633/RPC2"
+    {% endif %}
+]
+
+RAFT = [
+    LOG_RETENTION        = 500000,
+    LOG_PURGE_TIMEOUT    = 600,
+    ELECTION_TIMEOUT_MS  = 2500,
+    BROADCAST_TIMEOUT_MS = 500,
+    XMLRPC_TIMEOUT_MS    = 2000
+]
+
+# Executed when a server transits from follower->leader
+RAFT_LEADER_HOOK = [
+    COMMAND = "raft/vip.sh",
+    ARGUMENTS = "leader hcs0 10.0.10.13/24 10.10.10.1"
+]
+
+# Executed when a server transits from leader->follower
+RAFT_FOLLOWER_HOOK = [
+    COMMAND = "raft/vip.sh",
+    ARGUMENTS = "follower hcs0 10.0.10.13/24 10.10.10.1"
+]
+
+
+
+DEFAULT_COST = [
+    CPU_COST    = 0,
+    MEMORY_COST = 0,
+    DISK_COST   = 0
+]
+
+
+
+MAX_CONN           = 30
+MAX_CONN_BACKLOG   = 30
+KEEPALIVE_TIMEOUT  = 30
+KEEPALIVE_MAX_CONN = 30
+TIMEOUT            = 30
+#RPC_LOG            = NO
+#MESSAGE_SIZE       = 1073741824
+LOG_CALL_FORMAT    = "Запрос:%i Пользователь:%U Метод:%m"
+
+
+
+NETWORK_SIZE = 254
+
+MAC_PREFIX   = "02:00"
+
+VLAN_IDS = [
+    START    = "2",
+    RESERVED = "0, 1, 4095"
+]
+
+VXLAN_IDS = [
+    START = "2"
+]
+
+#PCI_PASSTHROUGH_BUS = "0x01"
+
+
+
+DATASTORE_LOCATION  = /data/0/datastores
+
+DATASTORE_CAPACITY_CHECK = "yes"
+
+DEFAULT_DEVICE_PREFIX       = "hd"
+DEFAULT_CDROM_DEVICE_PREFIX = "hd"
+
+DEFAULT_IMAGE_TYPE           = "OS"
+#DEFAULT_IMAGE_PERSISTENT     = ""
+#DEFAULT_IMAGE_PERSISTENT_NEW = ""
+
+
+#-------------------------------------------------------------------------------
+#  Information Collector for KVM IM's.
+#-------------------------------------------------------------------------------
+#  This driver CANNOT BE ASSIGNED TO A HOST, and needs to be used with KVM
+#    -h  prints this help.
+#    -a  Address to bind the collectd socket (default 0.0.0.0)
+#    -p  UDP port to listen for monitor information (default 4124)
+#    -f  Interval in seconds to flush collected information (default 5)
+#    -t  Number of threads for the server (default 50)
+#    -i  Time in seconds of the monitorization push cycle. This parameter must
+#        be smaller than MONITORING_INTERVAL, otherwise push monitorization will
+#        not be effective.
+#-------------------------------------------------------------------------------
+
+IM_MAD = [
+      NAME       = "collectd",
+      EXECUTABLE = "collectd",
+      ARGUMENTS  = "-p 4124 -f 4 -t 50 -i 3" ]
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+#  KVM UDP-push Information Driver Manager Configuration
+#    -r number of retries when monitoring a host
+#    -t number of threads, i.e. number of hosts monitored at the same time
+#-------------------------------------------------------------------------------
+IM_MAD = [
+      NAME          = "kvm",
+      SUNSTONE_NAME = "KVM",
+      EXECUTABLE    = "one_im_ssh",
+      ARGUMENTS     = "-r 3 -t 30 kvm" ]
+
+
+#-------------------------------------------------------------------------------
+#  KVM Virtualization Driver Manager Configuration
+#    -r number of retries when monitoring a host
+#    -t number of threads, i.e. number of hosts monitored at the same time
+#    -l <actions[=command_name]> actions executed locally, command can be
+#        overridden for each action.
+#        Valid actions: deploy, shutdown, cancel, save, restore, migrate, poll
+#        An example: "-l migrate=migrate_local,save"
+#    -p more than one action per host in parallel, needs support from hypervisor
+#    -s <shell> to execute remote commands, bash by default
+#
+#  Note: You can use type = "qemu" to use qemu emulated guests, e.g. if your
+#  CPU does not have virtualization extensions or use nested Qemu-KVM hosts
+#-------------------------------------------------------------------------------
+
+
+VM_MAD = [
+    NAME           = "kvm",
+    SUNSTONE_NAME  = "KVM",
+    EXECUTABLE     = "one_vmm_exec",
+    ARGUMENTS      = "-t 10 -r 0 kvm -l deploy,shutdown,cancel,snapshotcreate,snapshotdelete,snapshotrevert,save,restore,attachdisk,detachdisk",
+    DEFAULT        = "vmm_exec/vmm_exec_kvm.conf",
+    TYPE           = "kvm",
+    KEEP_SNAPSHOTS = "yes",
+    IMPORTED_VMS_ACTIONS = ""
+]
+
+#*******************************************************************************
+# Transfer Manager Driver Configuration
+#*******************************************************************************
+# You can add more transfer managers with different configurations but make
+# sure it has different names.
+#   name      : name for this transfer driver
+#
+#   executable: path of the transfer driver executable, can be an
+#               absolute path or relative to $ONE_LOCATION/lib/mads (or
+#               /usr/lib/one/mads/ if OpenNebula was installed in /)
+#   arguments :
+#       -t: number of threads, i.e. number of transfers made at the same time
+#       -d: list of transfer drivers separated by commas, if not defined all the
+#           drivers available will be enabled
+#*******************************************************************************
+
+TM_MAD = [
+    EXECUTABLE = "one_tm",
+    ARGUMENTS = "-t 10 -d lvm_v1,ceph,storm,shared_fs,iscsi_libvirt,dev,ssh"
+]
+
+
+#*******************************************************************************
+# Datastore Driver Configuration
+#*******************************************************************************
+# Drivers to manage the datastores, specialized for the storage backend
+#   executable: path of the transfer driver executable, can be an
+#               absolute path or relative to $ONE_LOCATION/lib/mads (or
+#               /usr/lib/one/mads/ if OpenNebula was installed in /)
+#
+#   arguments : for the driver executable
+#       -t number of threads, i.e. number of repo operations at the same time
+#       -d datastore mads separated by commas
+#       -s system datastore tm drivers, used to monitor shared system ds.
+#       -w Timeout in seconds to execute external commands (default unlimited)
+#*******************************************************************************
+
+DATASTORE_MAD = [
+    EXECUTABLE = "one_datastore",
+    ARGUMENTS  = "-t 10 -d lvm_v1,ceph,storm,shared_fs,nfs,iscsi_libvirt,dev -s ssh"
+]
+
+#*******************************************************************************
+# Datastore Manager Driver Behavior Configuration
+#*******************************************************************************
+# The  configuration for each driver is defined in DS_MAD_CONF. These
+# values are used when creating a new datastore and should not be modified
+# since they define the datastore behavior.
+#   name      : name of the transfer driver, listed in the -d option of the
+#               DS_MAD section
+#   required_attrs : comma separated list of required attributes in the DS
+#                    template
+#   persistent_only: specifies whether the datastore can only manage persistent
+#                    images
+#*******************************************************************************
+
+DS_MAD_CONF = [
+    NAME = "lvm_v1", REQUIRED_ATTRS = "DISK_TYPE,BRIDGE_LIST,VG_NAME",
+    PERSISTENT_ONLY = "NO"
+]
+
+DS_MAD_CONF = [
+    NAME = "ceph", REQUIRED_ATTRS = "DISK_TYPE,BRIDGE_LIST,POOL_NAME,CEPH_HOST,CEPH_SECRET,CEPH_USER",
+    PERSISTENT_ONLY = "NO"
+]
+
+DS_MAD_CONF = [
+    NAME = "storm", REQUIRED_ATTRS = "DISK_TYPE,BRIDGE_LIST,STORM_POOL_NAME,STORM_MONITORS,STORM_SECRET,STORM_USER",
+    PERSISTENT_ONLY = "NO"
+]
+
+DS_MAD_CONF = [
+    NAME = "shared_fs", REQUIRED_ATTRS = "BRIDGE_LIST",
+    PERSISTENT_ONLY = "NO"
+]
+
+DS_MAD_CONF = [
+    NAME = "nfs", REQUIRED_ATTRS = "BRIDGE_LIST,NFS_HOST,NFS_PATH", PERSISTENT_ONLY = "NO"
+]
+
+DS_MAD_CONF = [
+    NAME = "iscsi_libvirt", REQUIRED_ATTRS = "DISK_TYPE,ISCSI_HOST",
+    PERSISTENT_ONLY = "YES"
+]
+
+DS_MAD_CONF = [
+    NAME = "dev", REQUIRED_ATTRS = "DISK_TYPE", PERSISTENT_ONLY = "YES"
+]
+
+
+#*******************************************************************************
+# Transfer Manager Driver Behavior Configuration
+#*******************************************************************************
+# The  configuration for each driver is defined in TM_MAD_CONF. These
+# values are used when creating a new datastore and should not be modified
+# since they define the datastore behavior.
+#   name      : name of the transfer driver, listed in the -d option of the
+#               TM_MAD section
+#   ln_target : determines how the persistent images will be cloned when
+#               a new VM is instantiated.
+#       NONE: The image will be linked and no more storage capacity will be used
+#       SELF: The image will be cloned in the Images datastore
+#       SYSTEM: The image will be cloned in the System datastore
+#   clone_target : determines how the non persistent images will be
+#                  cloned when a new VM is instantiated.
+#       NONE: The image will be linked and no more storage capacity will be used
+#       SELF: The image will be cloned in the Images datastore
+#       SYSTEM: The image will be cloned in the System datastore
+#   shared : determines if the storage holding the system datastore is shared
+#            among the different hosts or not. Valid values: "yes" or "no"
+#   ds_migrate : The driver allows migrations across datastores. Valid values:
+#               "yes" or "no". Note: THIS ONLY APPLIES TO SYSTEM DS.
+#   allow_orphans: Snapshots can live without parents
+#*******************************************************************************
+
+TM_MAD_CONF = [
+    NAME = "lvm_v1", LN_TARGET = "NONE", CLONE_TARGET = "SELF", SHARED = "YES",
+    DS_MIGRATE = "NO", DRIVER = "raw", ALLOW_ORPHANS="yes"
+]
+
+TM_MAD_CONF = [
+    NAME = "ceph", LN_TARGET = "NONE", CLONE_TARGET = "SELF", SHARED = "YES",
+    DS_MIGRATE = "NO", DRIVER = "raw", ALLOW_ORPHANS="yes"
+]
+
+TM_MAD_CONF = [
+    NAME = "storm", LN_TARGET = "NONE", CLONE_TARGET = "SELF", SHARED = "YES",
+    DS_MIGRATE = "NO", DRIVER = "raw", ALLOW_ORPHANS="yes"
+]
+
+TM_MAD_CONF = [
+    NAME = "shared_fs", LN_TARGET = "NONE", CLONE_TARGET = "SELF", SHARED = "YES",
+    DS_MIGRATE = "NO", DRIVER = "raw", ALLOW_ORPHANS="yes"
+]
+
+TM_MAD_CONF = [
+    NAME = "iscsi_libvirt", LN_TARGET = "NONE", CLONE_TARGET = "SELF", SHARED = "YES",
+    DS_MIGRATE = "NO"
+]
+
+TM_MAD_CONF = [
+    NAME = "dev", LN_TARGET = "NONE", CLONE_TARGET = "NONE", SHARED = "YES"
+]
+
+TM_MAD_CONF = [
+    NAME = "ssh", LN_TARGET = "SYSTEM", CLONE_TARGET = "SYSTEM", SHARED = "NO",
+    DS_MIGRATE = "YES"
+]
+
+
+
+
+#*******************************************************************************
+
+MARKET_MAD = [
+    EXECUTABLE = "one_market",
+    ARGUMENTS  = "-t 15 -m http,s3,one,static"
+]
+
+IPAM_MAD = [
+    EXECUTABLE = "one_ipam",
+    ARGUMENTS  = "-t 1 -i dummy"
+]
+
+HM_MAD = [
+    EXECUTABLE = "one_hm"
+]
+
+AUTH_MAD = [
+    EXECUTABLE = "one_auth_mad",
+    AUTHN = "ssh,x509,ldap,server_cipher,server_x509"
+]
+
+#DEFAULT_AUTH = "default"
+
+SESSION_EXPIRATION_TIME = 900
+
+#ENABLE_OTHER_PERMISSIONS = "YES"
+
+DEFAULT_UMASK = 177
+
+VM_ADMIN_OPERATIONS  = "migrate, delete, recover, retry, deploy, resched"
+
+VM_MANAGE_OPERATIONS = "undeploy, hold, release, stop, suspend, resume, reboot,
+    poweroff, disk-attach, nic-attach, disk-snapshot, terminate, disk-resize,
+    snapshot, updateconf, rename, resize, update, disk-saveas"
+
+VM_USE_OPERATIONS    = ""
+
+VM_RESTRICTED_ATTR = "CONTEXT/FILES"
+VM_RESTRICTED_ATTR = "NIC/MAC"
+VM_RESTRICTED_ATTR = "NIC/VLAN_ID"
+VM_RESTRICTED_ATTR = "NIC/BRIDGE"
+#VM_RESTRICTED_ATTR = "NIC/INBOUND_AVG_BW"
+#VM_RESTRICTED_ATTR = "NIC/INBOUND_PEAK_BW"
+#VM_RESTRICTED_ATTR = "NIC/INBOUND_PEAK_KB"
+#VM_RESTRICTED_ATTR = "NIC/OUTBOUND_AVG_BW"
+#VM_RESTRICTED_ATTR = "NIC/OUTBOUND_PEAK_BW"
+#VM_RESTRICTED_ATTR = "NIC/OUTBOUND_PEAK_KB"
+#VM_RESTRICTED_ATTR = "NIC/OPENNEBULA_MANAGED"
+VM_RESTRICTED_ATTR = "NIC_DEFAULT/MAC"
+VM_RESTRICTED_ATTR = "NIC_DEFAULT/VLAN_ID"
+VM_RESTRICTED_ATTR = "NIC_DEFAULT/BRIDGE"
+#VM_RESTRICTED_ATTR = "DISK/TOTAL_BYTES_SEC"
+#VM_RESTRICTED_ATTR = "DISK/READ_BYTES_SEC"
+#VM_RESTRICTED_ATTR = "DISK/WRITE_BYTES_SEC"
+#VM_RESTRICTED_ATTR = "DISK/TOTAL_IOPS_SEC"
+#VM_RESTRICTED_ATTR = "DISK/READ_IOPS_SEC"
+#VM_RESTRICTED_ATTR = "DISK/WRITE_IOPS_SEC"
+#VM_RESTRICTED_ATTR = "DISK/OPENNEBULA_MANAGED"
+#VM_RESTRICTED_ATTR = "DISK/SIZE"
+#VM_RESTRICTED_ATTR = "DISK/ORIGINAL_SIZE"
+#VM_RESTRICTED_ATTR = "DISK/SIZE_PREV"
+VM_RESTRICTED_ATTR = "CPU_COST"
+VM_RESTRICTED_ATTR = "MEMORY_COST"
+VM_RESTRICTED_ATTR = "DISK_COST"
+VM_RESTRICTED_ATTR = "PCI"
+VM_RESTRICTED_ATTR = "EMULATOR"
+#VM_RESTRICTED_ATTR = "RAW"
+VM_RESTRICTED_ATTR = "USER_PRIORITY"
+#VM_RESTRICTED_ATTR = "USER_INPUTS/CPU"
+#VM_RESTRICTED_ATTR = "USER_INPUTS/MEMORY"
+#VM_RESTRICTED_ATTR = "USER_INPUTS/VCPU"
+
+#VM_RESTRICTED_ATTR = "RANK"
+#VM_RESTRICTED_ATTR = "SCHED_RANK"
+#VM_RESTRICTED_ATTR = "REQUIREMENTS"
+#VM_RESTRICTED_ATTR = "SCHED_REQUIREMENTS"
+
+IMAGE_RESTRICTED_ATTR = "SOURCE"
+
+
+VNET_RESTRICTED_ATTR = "VN_MAD"
+VNET_RESTRICTED_ATTR = "PHYDEV"
+VNET_RESTRICTED_ATTR = "VLAN_ID"
+VNET_RESTRICTED_ATTR = "BRIDGE"
+VNET_RESTRICTED_ATTR = "CONF"
+VNET_RESTRICTED_ATTR = "BRIDGE_CONF"
+VNET_RESTRICTED_ATTR = "IP_LINK_CONF"
+
+VNET_RESTRICTED_ATTR = "AR/VN_MAD"
+VNET_RESTRICTED_ATTR = "AR/PHYDEV"
+VNET_RESTRICTED_ATTR = "AR/VLAN_ID"
+VNET_RESTRICTED_ATTR = "AR/BRIDGE"
+
+#INHERIT_IMAGE_ATTR     = "EXAMPLE"
+#INHERIT_IMAGE_ATTR     = "SECOND_EXAMPLE"
+#INHERIT_DATASTORE_ATTR = "COLOR"
+#INHERIT_VNET_ATTR      = "BANDWIDTH_THROTTLING"
+
+INHERIT_DATASTORE_ATTR  = "CEPH_HOST"
+INHERIT_DATASTORE_ATTR  = "CEPH_SECRET"
+INHERIT_DATASTORE_ATTR  = "CEPH_KEY"
+INHERIT_DATASTORE_ATTR  = "CEPH_USER"
+INHERIT_DATASTORE_ATTR  = "CEPH_CONF"
+INHERIT_DATASTORE_ATTR  = "POOL_NAME"
+
+INHERIT_DATASTORE_ATTR  = "STORM_MONITORS"
+INHERIT_DATASTORE_ATTR  = "STORM_SECRET"
+INHERIT_DATASTORE_ATTR  = "STORM_USER"
+INHERIT_DATASTORE_ATTR  = "STORM_POOL_NAME"
+
+INHERIT_DATASTORE_ATTR  = "ISCSI_USER"
+INHERIT_DATASTORE_ATTR  = "ISCSI_USAGE"
+INHERIT_DATASTORE_ATTR  = "ISCSI_HOST"
+
+INHERIT_DATASTORE_ATTR  = "NFS_HOST"
+INHERIT_DATASTORE_ATTR  = "NFS_PATH"
+
+INHERIT_DATASTORE_ATTR  = "SMB_HOST"
+INHERIT_DATASTORE_ATTR  = "SMB_PATH"
+
+INHERIT_IMAGE_ATTR      = "ISCSI_USER"
+INHERIT_IMAGE_ATTR      = "ISCSI_USAGE"
+INHERIT_IMAGE_ATTR      = "ISCSI_HOST"
+INHERIT_IMAGE_ATTR      = "ISCSI_IQN"
+
+INHERIT_DATASTORE_ATTR  = "GLUSTER_HOST"
+INHERIT_DATASTORE_ATTR  = "GLUSTER_VOLUME"
+
+INHERIT_DATASTORE_ATTR  = "DISK_TYPE"
+INHERIT_DATASTORE_ATTR  = "ALLOW_ORPHANS"
+
+
+INHERIT_IMAGE_ATTR      = "DISK_TYPE"
+
+INHERIT_VNET_ATTR       = "VLAN_TAGGED_ID"
+INHERIT_VNET_ATTR       = "FILTER_IP_SPOOFING"
+INHERIT_VNET_ATTR       = "FILTER_MAC_SPOOFING"
+INHERIT_VNET_ATTR       = "MTU"
+INHERIT_VNET_ATTR       = "INBOUND_AVG_BW"
+INHERIT_VNET_ATTR       = "INBOUND_PEAK_BW"
+INHERIT_VNET_ATTR       = "INBOUND_PEAK_KB"
+INHERIT_VNET_ATTR       = "OUTBOUND_AVG_BW"
+INHERIT_VNET_ATTR       = "OUTBOUND_PEAK_BW"
+INHERIT_VNET_ATTR       = "OUTBOUND_PEAK_KB"
+INHERIT_VNET_ATTR       = "CONF"
+INHERIT_VNET_ATTR       = "BRIDGE_CONF"
+INHERIT_VNET_ATTR       = "IP_LINK_CONF"
+
+
+#*******************************************************************************
+
+MARKET_MAD_CONF = [
+    NAME = "one",
+    SUNSTONE_NAME  = "OpenNebula.org Marketplace",
+    REQUIRED_ATTRS = "",
+    APP_ACTIONS = "monitor",
+    PUBLIC = "yes"
+]
+
+MARKET_MAD_CONF = [
+    NAME = "http",
+    SUNSTONE_NAME  = "HTTP server",
+    REQUIRED_ATTRS = "BASE_URL,PUBLIC_DIR",
+    APP_ACTIONS = "create, delete, monitor"
+]
+
+MARKET_MAD_CONF = [
+    NAME = "s3",
+    SUNSTONE_NAME = "Amazon S3",
+    REQUIRED_ATTRS = "ACCESS_KEY_ID,SECRET_ACCESS_KEY,REGION,BUCKET",
+    APP_ACTIONS = "create, delete, monitor"
+]
+
+MARKET_MAD_CONF = [
+    NAME = "static",
+    SUNSTONE_NAME  = "Statically Generated Marketplace",
+    REQUIRED_ATTRS = "",
+    APP_ACTIONS = "create, delete, monitor",
+    PUBLIC = "yes"
+]
+
+AUTH_MAD_CONF = [
+    NAME = "core",
+    PASSWORD_CHANGE = "YES",
+    DRIVER_MANAGED_GROUPS = "NO",
+    MAX_TOKEN_TIME = "-1"
+]
+
+AUTH_MAD_CONF = [
+    NAME = "public",
+    PASSWORD_CHANGE = "NO",
+    DRIVER_MANAGED_GROUPS = "NO",
+    MAX_TOKEN_TIME = "-1"
+]
+
+AUTH_MAD_CONF = [
+    NAME = "ssh",
+    PASSWORD_CHANGE = "YES",
+    DRIVER_MANAGED_GROUPS = "NO",
+    MAX_TOKEN_TIME = "-1"
+]
+
+AUTH_MAD_CONF = [
+    NAME = "x509",
+    PASSWORD_CHANGE = "NO",
+    DRIVER_MANAGED_GROUPS = "NO",
+    MAX_TOKEN_TIME = "-1"
+]
+
+AUTH_MAD_CONF = [
+    NAME = "ldap",
+    PASSWORD_CHANGE = "YES",
+    DRIVER_MANAGED_GROUPS = "YES",
+    MAX_TOKEN_TIME = "86400"
+]
+
+AUTH_MAD_CONF = [
+    NAME = "server_cipher",
+    PASSWORD_CHANGE = "NO",
+    DRIVER_MANAGED_GROUPS = "NO",
+    MAX_TOKEN_TIME = "-1"
+]
+
+AUTH_MAD_CONF = [
+    NAME = "server_x509",
+    PASSWORD_CHANGE = "NO",
+    DRIVER_MANAGED_GROUPS = "NO",
+    MAX_TOKEN_TIME = "-1"
+]

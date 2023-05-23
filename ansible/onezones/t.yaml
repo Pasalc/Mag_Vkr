@@ -1,0 +1,7 @@
+---
+- hosts: master
+  become: true
+  tasks:
+    - name: M 
+      docker_image:
+        load_path: "/data/0/image.tar"

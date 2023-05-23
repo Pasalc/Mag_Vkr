@@ -1,0 +1,3 @@
+---
+- name: Restart oned in docker
+  shell: docker exec {{ container_name}} bash oned restart 

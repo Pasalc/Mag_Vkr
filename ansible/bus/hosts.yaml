@@ -1,0 +1,13 @@
+all:
+  hosts:
+  backup_host:
+    ansible_host: 192.168.10.23 
+  oned_host:
+    ansible_host: 192.168.10.23
+  children:
+    backuper:
+      hosts:
+        backup_host
+    oned:
+      hosts:
+        oned_host

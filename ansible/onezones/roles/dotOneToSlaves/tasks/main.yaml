@@ -1,0 +1,13 @@
+---
+- name: Copy file to remote host
+  copy:
+    src: 
+      - {{ dotOne_path_local }}/one_auth
+      - {{ dotOne_path_local }}/oneflow_auth
+      - {{ dotOne_path_local }}/onegate_auth
+      - {{ dotOne_path_local }}/sunstone_auth
+    dest: {{ dotOne_path }}
+- name: Copy file to {{ container_name }} container
+  shell: docker cp {{ dotOne_path }} {{ container_name }}:{{dotOne_path_docker}} 
+- name: Change .one owner to oneadmin
+  shell: docker exec {{ container_name }} {{ bash }} chown oneadmin:oneadmin {{ dotOne_path_docker }} 

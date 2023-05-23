@@ -1,0 +1,27 @@
+#zone: name that will be given to zone(host name by default)
+#endpoint: endpoint ip that will be assign to zone (ansible_host by default)
+all:
+  hosts:
+    SRV15-06.echd.ru:
+      user: root
+    SRV17-06.echd.ru:
+      user: root
+    SRV18-06.echd.ru:
+      user: root
+    SRV24-01.echd.ru:
+      user: root
+    SRV24-02.echd.ru:
+      user: root
+    SRV24-03.echd.ru:
+      user: root
+  children:
+    master:
+      hosts:
+        SRV15-06.echd.ru:
+    slaves:
+      hosts:
+        SRV17-06.echd.ru:
+        SRV18-06.echd.ru:
+        SRV24-01.echd.ru:
+        SRV24-02.echd.ru:
+        SRV24-03.echd.ru:

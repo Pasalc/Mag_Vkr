@@ -1,0 +1,7 @@
+---
+- name: Copy .one from docker
+  shell: "docker cp {{container_name}}:{{dotOne_path_docker}} {{dotOne_path}}"
+- name: Copy to localhost
+  fetch:
+    src: {{ dotOne_path }}
+    dest: {{ dotOne_path_local }}

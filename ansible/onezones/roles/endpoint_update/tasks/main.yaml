@@ -1,0 +1,25 @@
+---
+- name: Generate zone file for {{ zone_name }}
+  template:
+    src: templates/zone.j2
+    dest: "{{ endpoint_path }}"
+- name: Wait till oned unlocks
+  shell: docker exec {{ container_name }} {{ onezone }} list
+  register: result
+  until: result is succeeded
+  retries: 10
+  delay: 10
+- name: Try create zone {{ zone_name }}
+  shell: docker exec {{ container_name }} {{ onezone }} create {{ endpoint_path }}
+  register: result
+  failed_when: "'NAME is already taken' not in result.stderr"
+- name: Get {{ zone_name }} id
+  shell: docker exec -it {{ container_name }} bash "{{ onezone }} show {{zone_name}} --xml | xmllint --xpath '//ID/text()' -"
+  register: zone_id
+- name: Set ansible zone_id var for "{{ host_name }}"
+  set_fact:
+    zone_id: "{{ zone_id }}"
+  delegate_to: "{{ host_name }}"
+  when: host_name is defined
+- name: Update endpoint of zone {{ zone_id }}
+  shell: docker exec {{ container_name }} {{ bash }} "{{ onezone }} update {{ zone_id }} {{ endpoint_path }}"

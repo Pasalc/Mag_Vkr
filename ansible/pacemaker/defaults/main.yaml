@@ -1,0 +1,30 @@
+NAMECLUSTER: ECHD_hcs
+FLOAT_IP: 10.200.150.72
+FLOAT_NETMASK: 23
+FLOAT_NIC: sys0
+#BINDNET can be calculated by 
+#sipcalc $FLOAT_IP/$FLOAT_NETMASK | grep -e "Network address"
+BINDNET: 10.200.150.0
+
+#Rename to your liking
+stonith_name: "st-null"
+#stonith agent, like fence_scsi for example
+stonith_module: "stonith:null"
+
+#Which PV should be added to global_filter in lvm.conf
+#'"a|/dev/mapper/mpath.*|", "a|/dev/sdee|"'
+pv_devices: '"a|/dev/mapper/mpath.*|"'
+pv_path: "/dev/mapper/mpathk"
+#Change docker_image version to your version (check with `docker images`)
+docker_image: "hcs:1.1.28"
+
+vg_name: "hcs_haVG"
+lv_name: "hcs_haLV"
+container_name: "hcs"
+image_name: hcs
+image_path: /data/0/hcs.tar.gz
+ulib: /usr/lib/python3.8/site-packages/
+
+hvol_vol: hvol
+fstype: xfs
+hcs_dir: /data/hcs

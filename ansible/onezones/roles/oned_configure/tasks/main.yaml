@@ -1,0 +1,7 @@
+---
+- name: Generate oned.conf
+  template:
+    src: templates/oned.j2
+    dest: "{{ oned_path }}"
+- name: Copy to docker 
+  shell: docker cp {{ oned_path }} {{ container_name }}:/etc/one/oned.conf

@@ -1,0 +1,9 @@
+---
+- name: Copy federation table backup from localhost
+  copy:
+    src: {{ fedDB_path_local }}
+    dest: {{fedDB_path}}
+- name: Copy backup to docker
+  shell: "docker cp {{container_name}}:{{fedDB_path_docker}} {{fedDB_path}}"
+- name: Restore federaion from backup
+  shell: "docker exec {{ container_name }} {{ bash }} {{ onedb }} restore -u{{ onedb_user }} -p{{ onedb_pass }}-d federated opennebula"
