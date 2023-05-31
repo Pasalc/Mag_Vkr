@@ -1,0 +1,221 @@
+- name: gather sanlock IDs if set
+  command: sed -e 's/^\s*host_id\s*=\s*//p' -e d /etc/lvm/lvmlocal.conf
+  args:
+    warn: false
+  changed_when: false
+  register: res
+
+
+- name: set lvm parameters for sanlock 
+  set_fact:
+    use_lvmlockd: 1
+    lvmlockd_lock_retries: "{{ (sanlock_shared_lvm_group | length) * 2 + 2 }}"
+    sanlock_id: "{{ (res.stdout == '') | ternary(omit, res.stdout) }}"
+    cacheable: no
+
+
+- name: generate sanlock ids array for unconfigured hosts
+# range(1, num_of_hosts_in_shared_group) - set_of_configured_ids, its size may
+# exceeds number of unconfigured hosts if used IDs values is above range,
+# it's OK
+  set_fact:
+      sanlock_ids: "{{ q('sequence', 'start=1 count=%s'| format(sanlock_shared_lvm_group | length)) | map('int') | difference(sanlock_shared_lvm_group | map('extract', hostvars, 'sanlock_id') | select('defined') | map('int') | list) }}"
+  delegate_to: "{{ sanlock_shared_lvm_group[0] }}"
+  delegate_facts: yes
+  run_once: true
+
+
+- name: assign sanlock id to unconfigured hosts
+  set_fact:
+    sanlock_id: "{{ hostvars[sanlock_shared_lvm_group[0]]['sanlock_ids'][idx] | int }}"
+    cacheable: no
+  loop: "{{ sanlock_shared_lvm_group | map('extract', hostvars) | selectattr('sanlock_id', 'undefined') | map(attribute='inventory_hostname') | list }}"
+  loop_control:
+    index_var: idx
+  delegate_to: "{{ item }}"
+  delegate_facts: yes
+  run_once: yes
+
+
+- name: generate host_id string
+  set_fact:
+    host_id: "host_id = {{ sanlock_id }}"
+    cacheable: no
+  when:
+  - sanlock_id is defined
+
+
+- name: build filters
+  set_fact:
+    lvm_filters: "{{ lvm_filters|default([]) + [ 'a|' + item.1 + '|' ] }}"
+  loop: "{{ lvm_shared_vgs | default([]) | subelements('pvs') }}"
+  loop_control:
+    label: "{{ item.1 }}"
+
+- name: tweak LVM config
+  lvm_conf:
+    list_action: merge
+    conf:
+      global:
+        locking_type: 1
+        use_lvmetad: 1
+        use_lvmlockd: 1
+        lvmlockd_lock_retries: "{{ (sanlock_shared_lvm_group | length) * 2 + 2 }}"
+      activation:
+        thin_pool_autoextend_threshold: lvm_thin_pool_autoextend_threshold
+        thin_pool_autoextend_percent: 20
+        reserved_stack: lvm_activation_reserved_stack
+        reserved_memory: lvm_activation_reserved_memory
+      devices:
+        global_filter: "{{ lvm_filters | list }}"
+
+- name: tweak LVM local config
+  lvm_conf:
+    scope: local
+    conf:
+      local:
+        host_id: sanlock_id
+
+# - name: generate LVM configs
+#   template:
+#     dest: "/etc/lvm/{{ item }}.conf"
+#     src: "{{ item }}.conf.j2"
+#     owner: root
+#     group: root
+#   loop:
+#     - lvm
+#     - lvmlocal
+#   loop_control:
+#     label: "{{ item }}.conf"
+#   register: rc
+
+
+- name: applying configs
+  service:
+    name: lvm
+    enabled: true
+    state: restarted
+    runlevel: boot
+  when: rc.changed
+
+
+- name: ensure lvmlockd is running
+  service:
+    name: lvmlockd
+    state: started
+
+
+# - name: scan PVS devices
+#   shell: "d=$(realpath {{ item.1 }}); find /dev | while read p; do if [ $d = $(realpath $p) ]; then echo $p ; fi ; done | grep -v -E '^/dev/block'"
+#   changed_when: false
+#   loop: "{{ lvm_shared_vgs | default([]) | subelements('pvs') }}"
+#   loop_control:
+#     label: "{{ item.1 }}"
+#   register: lvm_pvs_all
+
+
+# - name: build filters
+#   set_fact:
+#     lvm_filters: "{{ lvm_filters|default([]) + [ '\"a|' + item.1 + '|\"' ] }}"
+#   loop: "{{ lvm_pvs_all.results | subelements('stdout_lines') }}"
+#   loop_control:
+#     label: "{{ item.1 }}"
+
+
+# - name: re-generate LVM configs, consider filters
+#   template:
+#     dest: /etc/lvm/lvm.conf
+#     src: lvm.conf.j2
+#     owner: root
+#     group: root
+
+
+- name: enable wdmd daemon
+  service:
+    name: wdmd
+    enabled: true
+    state: started
+
+
+- name: tune daemons dependencies
+  block:
+  - lineinfile:
+      path: /etc/conf.d/sanlock
+      create: yes
+      insertafter: ^\s*#\s*rc_need=
+      regexp: ^\s*rc_need=
+      line: 'rc_need="wdmd"'
+      state: present
+  - lineinfile:
+      path: /etc/conf.d/lvm
+      create: yes
+      insertafter: ^\s*#\s*rc_need=
+      regexp: ^\s*rc_need=
+      line: 'rc_need="udev sanlock"'
+      state: present
+
+
+- name: enable sanlock daemon
+  service:
+    name: sanlock
+    enabled: true
+    state: started
+
+
+- name: check if VG exists
+  shell: "vgdisplay --noheadings -C -o vg_name|grep -q {{ item.name }} && echo yes || echo no"
+  args:
+    warn: no
+  loop: "{{ lvm_shared_vgs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  run_once: true
+  register: rc
+
+# - name: DBG
+#   debug:
+#       var: rc
+
+
+- name: create VGS
+  command: "vgcreate --shared --physicalextentsize 64m  --metadatasize 64m {{ item.name }} {{ item.pvs | join(' ') }}"
+  loop: "{{ lvm_shared_vgs }}"
+  loop_control:
+    label: "{{ item.name }}"
+    index_var: idx
+  when: not rc.results[idx].stdout | bool
+  run_once: true
+
+
+# - name: rescan PVS devices
+#   shell: "d=$(realpath {{ item.1 }}); find /dev | while read p; do if [ $d = $(realpath $p) ]; then echo $p ; fi ; done | grep -v -E '^/dev/block'"
+#   changed_when: false
+#   loop: "{{ lvm_shared_vgs | default([]) | subelements('pvs') }}"
+#   loop_control:
+#     label: "{{ item.1 }}"
+#   register: lvm_pvs_all
+
+
+# - name: rebuild filters
+#   set_fact:
+#     lvm_filters: "{{ lvm_filters|default([]) + [ '\"a|' + item.1 + '|\"' ] }}"
+#   loop: "{{ lvm_pvs_all.results | subelements('stdout_lines') }}"
+#   loop_control:
+#     label: "{{ item.1 }}"
+
+
+# - name: regenerate LVM config for new filters
+#   template:
+#     dest: "/etc/lvm/{{ item }}.conf"
+#     src: "{{ item }}.conf.j2"
+#     owner: root
+#     group: root
+#   loop:
+#     - lvm
+#     - lvmlocal
+#   loop_control:
+#     label: "{{ item }}.conf"
+
+
+- name: activate
+  command: "vgchange --lock-start"

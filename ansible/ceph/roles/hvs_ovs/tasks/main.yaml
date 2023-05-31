@@ -1,0 +1,14 @@
+- name: ensure bridges are created
+  openvswitch_bridge:
+    bridge: "{{ item.name }}"
+    state: "{{ item.state|default('present') }}"
+  loop: "{{ ovs_bridges | union(ovs_bridges_local|default([])) }}"
+
+- name: configure ports
+  include_tasks: ports.yaml
+  loop: "{{ ovs_bridges | union(ovs_bridges_local|default([])) }}"
+  loop_control:
+    loop_var: br_item
+  when:
+    - br_item.ports is defined
+    - br_item.state is not defined or br_item.state != 'absent'

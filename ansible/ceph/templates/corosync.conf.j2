@@ -1,0 +1,44 @@
+totem {
+      version: 2
+      crypto_cipher: none
+      crypto_hash: none
+      cluster_name: {{ pcmk.cluster_name }}
+{% for ring in pcmk.rings %}
+      interface {
+              ringnumber: {{ loop.index0 }}
+              bindnetaddr: {{ lookup('vars', 'ansible_' + ring).ipv4.network }}
+              mcastport: 5405
+              ttl: 1
+      }
+{% endfor %}
+      transport: udpu
+}
+logging {
+
+      fileline: off
+      to_stderr: no
+      to_logfile: yes
+      logfile: /var/log/cluster/corosync.log
+      to_syslog: yes
+      debug: off
+      timestamp: on
+      logger_subsys {
+              subsys: QUORUM
+              debug: off
+      }
+}
+nodelist {
+{% for node in ansible_play_hosts %}
+  node {
+{% for ring in pcmk.rings %}
+      ring{{ loop.index0 }}_addr: {{ hostvars[node]['ansible_' + ring].ipv4.address }}
+{% endfor %}
+      nodeid: {{ loop.index }}
+  }
+{% endfor %}
+}
+quorum {
+
+  provider: corosync_votequorum
+#   two_node: 1
+}

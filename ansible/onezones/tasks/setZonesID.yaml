@@ -1,0 +1,10 @@
+---
+- name: Get {{ zone_name }} id
+  shell: docker exec {{ container_name }} onezone show {{zone_name}} --xml | xmllint --xpath '//ID/text()' -
+  register: onezone_id
+- name: Set ansible zone_id var for "{{ host_name }}"
+  set_fact:
+    zone_id: "{{ onezone_id.stdout }}"
+  delegate_to: "{{ host_name }}"
+  delegate_facts: true
+  when: host_name is defined

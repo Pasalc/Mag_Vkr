@@ -1,0 +1,7 @@
+primitive drbd_r0 ocf:linbit:drbd params drbd_resource="drbd1" op start interval="0" timeout="240" op stop interval="0" timeout="100" op monitor interval="29s" role="Master" op monitor interval="31s" role="Slave"
+
+ms ms_drbd_r0 drbd_r0 meta master-max="2" master-node-max="1" clone-max="2" clone-node-max="1" notify="true"
+
+colocation co_fs_with_drbd inf: clonegfs ms_drbd_r0:Master
+
+order o_drbd_before_fs inf: ms_drbd_r0:promote clonegfs

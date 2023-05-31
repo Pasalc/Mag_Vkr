@@ -1,0 +1,86 @@
+all:
+  hosts:
+    h1:
+      user: root
+      ansible_host: 10.254.12.61
+    h2:
+      user: root
+      ansible_host: 10.254.12.62
+    h3:
+      user: root
+      ansible_host: 10.254.12.63
+    h4:
+      user: root
+      ansible_host: 10.254.12.64
+    h5:
+      user: root
+      ansible_host: 10.254.12.65
+    h6:
+      user: root
+      ansible_host: 10.254.12.66
+    h7:
+      user: root
+      ansible_host: 10.254.12.67
+    h8:
+      user: root
+      ansible_host: 10.254.12.68
+    h9:
+      user: root
+      ansible_host: 10.254.12.69
+    h10:
+      user: root
+      ansible_host: 10.254.12.70
+    h11:
+      user: root
+      ansible_host: 10.254.12.71
+    h12:
+      user: root
+      ansible_host: 10.254.12.72
+    h13:
+      user: root
+      ansible_host: 10.254.12.73
+    h14:
+      user: root
+      ansible_host: 10.254.12.74
+    h15:
+      user: root
+      ansible_host: 10.254.12.75
+    h16:
+      user: root
+      ansible_host: 10.254.12.76
+    h17:
+      user: root
+      ansible_host: 10.254.12.77
+
+  children:
+    ntp:
+      hosts:
+        h[1:17]:
+    net:
+      hosts:
+        h[1:17]:
+    mons:
+      hosts:
+        h1:
+        h5:
+        h9:
+    mgrs:
+      hosts:
+        h1:
+        h5:
+        h9:
+    osds:
+      hosts:
+        h[1:17]:
+    storage_devices:
+      children:
+        local_lvm:
+          hosts:
+            h[1:17]:
+        # shared_lvm:
+        #   children:
+        #     sslvm_0:
+        #       hosts:
+        #         serv109:
+        #         serv110:
+            

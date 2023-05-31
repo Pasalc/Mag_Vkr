@@ -1,0 +1,10 @@
+#
+# example inventory vars
+#
+
+pcmk:
+  cluster_name: gfs
+  rings:
+    - sys0
+
+ansible_python_interpreter: /usr/bin/python3

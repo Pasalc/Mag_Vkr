@@ -1,0 +1,15 @@
+- name: enable watchdog module for sanlock shared lvm groups
+  include_role:
+    name: watchdog
+  when: wd_enabled
+  
+
+- name: up sunlock shared LVM
+  include_role:
+    name: sanlock_shared_lvm
+
+
+- name: disable watchdog module for sanlock shared lvm groups
+  include_role:
+    name: watchdog
+  when: not wd_enabled

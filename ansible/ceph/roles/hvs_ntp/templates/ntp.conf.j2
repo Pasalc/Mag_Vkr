@@ -1,0 +1,29 @@
+{% for serv in hvs_ntp_upstreams if serv not in ansible_all_ipv4_addresses and serv != ansible_fqdn %}
+server {{ serv }} iburst
+restrict {{ serv }} nomodify notrap noquery
+{% endfor %}
+
+restrict -4 default nomodify nopeer noquery notrap
+restrict -6 default nomodify nopeer noquery notrap
+
+{% for pul in hvs_ntp_pools if pul not in ansible_all_ipv4_addresses and pul != ansible_fqdn %}
+pool {{ pul }} iburst
+{% endfor %}
+
+{% for peer in hvs_ntp_peers if peer is not in ansible_all_ipv4_addresses and peer != ansible_fqdn %}
+peer {{ peer }} iburst
+{% endfor %}
+restrict source nomodify noquery notrap
+
+restrict 127.127.1.0
+server 127.127.1.0
+fudge 127.127.1.0 stratum 32
+
+restrict localhost
+driftfile "/var/lib/ntp/ntp.drift"
+interface ignore all
+{% for nic in hvs_ntp_nics %}
+interface listen {{ nic }}
+{% endfor %}
+interface listen lo
+

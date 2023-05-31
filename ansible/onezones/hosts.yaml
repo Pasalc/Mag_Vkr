@@ -2,22 +2,22 @@
 #endpoint: endpoint ip that will be assign to zone (ansible_host by default)
 all:
   hosts:
-    h30:
+    h23:
       user: root
-      zone: h30
-      endpoint: "10.10.101.30"
-    h32:
+      zone: Horizon
+      endpoint: "10.10.101.23"
+    h25:
       user: root
-      ansible_host: 10.10.101.32
+      ansible_host: 10.10.101.25
   children:
     master:
       hosts:
-        h30
+        h23
       vars:
         federation_mode: "MASTER"
         zone_id: 0
     slaves:
       hosts:
-        h32
+        h25
       vars:
         federation_mode: "SLAVE"

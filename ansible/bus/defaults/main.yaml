@@ -1,7 +1,0 @@
-docker_bus_path: bus.tar
-docker_bus_image: bus:latest
-docker_bus_name: bus
-
-docker_one_name: hcs
-oneuser: /usr/bin/oneuser
-

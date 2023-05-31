@@ -1,0 +1,10 @@
+wd_enabled: true
+wd_module: softdog
+#wd_module_args: 
+lvm_shared_vgs:
+  - name: store0
+    pvs:
+      - /dev/disk/by-id/scsi-36001405c3647f7263584fce9017278b5
+# - name: store2
+#   pvs:
+#     - /dev/vdd

@@ -1,0 +1,16 @@
+---
+- hosts: partitions
+  gather_facts: false
+
+  tasks:
+
+  - name: make partitions
+    parted:
+      device: "{{ item.device }}"
+      part_start: "{{ item.start }}"
+      part_end: "{{ item.end }}"
+      name: "{{ item.label | default(omit) }}"
+      number: "{{ item.num }}"
+      label: gpt
+      state: "{{ (destroy | default(false) | bool) | ternary('absent', 'present') }}"
+    loop: "{{ partitions | default([]) }}"

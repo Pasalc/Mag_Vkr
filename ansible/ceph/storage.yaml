@@ -1,0 +1,13 @@
+---
+- name: storage v0
+  hosts: storade_devices
+  gather_facts: false
+
+- import_playbook: partitions.yaml
+  when: not destroy | default(false) | bool
+   
+
+- import_playbook: lvm.yaml
+
+- import_playbook: partitions.yaml
+  when: destroy | default(false) | bool

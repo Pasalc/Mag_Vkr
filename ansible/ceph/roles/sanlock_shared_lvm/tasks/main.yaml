@@ -1,0 +1,9 @@
+- name: Destroy
+  include_tasks: disable.yaml
+  when: destroy | bool
+
+- name: Enable
+  include_tasks: enable.yaml
+  when: not destroy | bool
+
+

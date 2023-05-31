@@ -1,0 +1,104 @@
+- name: check if VG exists
+  shell: "vgdisplay --noheadings -C -o vg_name|grep -q {{ item.name }} && echo yes || echo no"
+  args:
+    warn: no
+  loop: "{{ lvm_shared_vgs }}"
+  loop_control:
+    label: "{{ item.name }}"
+  # run_once: true
+  register: rc
+
+- name: deactivate vg
+  command: "vgchange -an {{ item.name }}"
+  loop: "{{ lvm_shared_vgs }}"
+  loop_control:
+    label: "{{ item.name }}"
+    index_var: idx
+  when: rc.results[idx].stdout | bool
+
+
+- name: stop locking
+  command: "vgchange --lock-stop {{ item.name }}"
+  loop: "{{ lvm_shared_vgs }}"
+  loop_control:
+    label: "{{ item.name }}"
+    index_var: idx
+  when: rc.results[idx].stdout | bool
+
+
+- name: recover LVM daemons dependencies
+  lineinfile:
+    path: /etc/conf.d/lvm
+    create: yes
+    insertafter: ^\s*#\s*rc_need=
+    regexp: ^\s*rc_need=
+    line: 'rc_need="udev"'
+    state: present
+
+- name: build filters
+  set_fact:
+    lvm_filters: "{{ lvm_filters|default([]) + [ 'a|' + item.1 + '|' ] }}"
+  loop: "{{ lvm_shared_vgs | default([]) | subelements('pvs') }}"
+  loop_control:
+    label: "{{ item.1 }}"
+
+
+- name: tweak LVM config
+  lvm_conf:
+    list_action: merge
+    conf:
+      global:
+        locking_type: 1
+        use_lvmetad: 1
+        use_lvmlockd: 0
+        lvmlockd_lock_retries: 3
+      activation:
+        thin_pool_autoextend_threshold: 70
+        thin_pool_autoextend_percent: 20
+        reserved_stack: 64
+        reserved_memory: 8192
+      devices:
+        global_filter: "{{ lvm_filters | list }}"
+
+
+- name: generate LVM configs
+  template:
+    dest: "/etc/lvm/{{ item }}.conf"
+    src: "{{ item }}.conf.j2"
+    owner: root
+    group: root
+  loop:
+    - lvm
+    - lvmlocal
+  loop_control:
+    label: "{{ item }}.conf"
+  register: rc
+
+
+- name: applying configs
+  service:
+    name: lvm
+    enabled: true
+    state: restarted
+    runlevel: boot
+  when: rc.changed
+
+
+- name: disable lvmlockd daemon
+  service:
+    name: lvmlockd
+    enabled: false
+    state: stopped
+
+
+- name: disable sanlock daemon
+  service:
+    name: sanlock
+    enabled: false
+    state: stopped
+
+
+- name: disable wdmd daemon
+  service:
+    name: wdmd
+    enabled: false

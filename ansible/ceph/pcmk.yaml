@@ -1,0 +1,42 @@
+---
+- hosts: pcmk
+  gather_facts: true
+
+  tasks:
+    - name: ''
+      local_action:
+        module: set_fact
+        corosync_config: "{{ lookup('template', 'corosync.conf.j2') }}"
+      run_once: true
+
+    - name: ensure cluster group existance
+      group:
+        name: haclient
+        system: yes
+    
+    - name: ensure cluster user existance
+      user:
+        name: hacluster
+        system: yes
+        group: haclient
+        home: /var/lib/heartbeat
+        shell: /dev/null
+
+    - name: write corosync configuration
+      copy:
+        dest: /etc/corosync/corosync.conf
+        content: "{{ corosync_config }}"
+      register: cfg_write
+
+    - name: reread changed config for corosync
+      service:
+        name: corosync
+        state: restarted
+      when: cfg_write.changed
+    
+    - name: ensure pacemaker is up
+      service:
+        name: pacemaker
+        enabled: yes
+        state: "{{ cfg_write.changed | ternary('restarted', 'started') }}"
+

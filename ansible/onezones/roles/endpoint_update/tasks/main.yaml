@@ -12,14 +12,15 @@
 - name: Try create zone {{ zone_name }}
   shell: docker exec {{ container_name }} {{ onezone }} create {{ endpoint_path }}
   register: result
-  failed_when: "'NAME is already taken' not in result.stderr"
+  failed_when: "'ID' not in result.stdout and 'NAME is already taken' not in result.stdout"
 - name: Get {{ zone_name }} id
-  shell: docker exec -it {{ container_name }} bash "{{ onezone }} show {{zone_name}} --xml | xmllint --xpath '//ID/text()' -"
-  register: zone_id
+  shell: docker exec {{ container_name }} onezone show {{zone_name}} --xml | xmllint --xpath '//ID/text()' -
+  register: onezone_id
 - name: Set ansible zone_id var for "{{ host_name }}"
   set_fact:
-    zone_id: "{{ zone_id }}"
+    zone_id: "{{ onezone_id.stdout }}"
   delegate_to: "{{ host_name }}"
+  delegate_facts: true
   when: host_name is defined
-- name: Update endpoint of zone {{ zone_id }}
-  shell: docker exec {{ container_name }} {{ bash }} "{{ onezone }} update {{ zone_id }} {{ endpoint_path }}"
+- name: "Update endpoint of zone {{ zone_id.stdout }}"
+  shell: docker exec {{ container_name }} onezone update {{ onezone_id.stdout }} {{ endpoint_path }}

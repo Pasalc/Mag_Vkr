@@ -1,0 +1,8 @@
+#
+# example inventory vars
+#
+
+sanlock_shared_lvm_groups:
+- sslvm_0
+
+ansible_python_interpreter: /usr/bin/python3

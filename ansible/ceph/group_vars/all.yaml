@@ -1,0 +1,11 @@
+#
+# example inventory vars
+#
+iscsi_storage:
+  - portal: 172.16.0.107
+    target: iqn.2003-01.org.linux-iscsi.nas0.x8664:sn.84f0c6f1558a
+
+sanlock_shared_lvm_groups:
+- sslvm_01
+
+ansible_python_interpreter: /usr/bin/python3

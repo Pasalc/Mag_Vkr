@@ -1,0 +1,82 @@
+---
+- hosts: net
+  gather_facts: false
+#  strategy: free
+#  serial:
+
+  tasks:
+
+  - name: DEconfigure interfaces
+    include_role:
+      name: hvs_net
+    vars:
+      deconfigure:
+
+  - name: configuring OVS
+    block:
+    - name: setup OVS bridges
+      openvswitch.openvswitch.openvswitch_bridge:
+        bridge: "{{ item.name }}"
+        state: "{{ item.state | default(omit) }}"
+        fail_mode: "{{ fail_mode | default(omit) }}"
+        parent: "{{ parent | default(omit) }}"
+        vlan: "{{ vlan | default(omit) }}"
+        external_ids: "{{ external_ids | default(omit) }}"
+        set: "{{ cmd | default(omit) }}"
+        timeout: "{{ timeout | default(omit) }}"
+        database_socket: "{{ database_socket | default(omit) }}"
+      loop: "{{ ovs_bridges | union( ovs_bridges_local | default([]) ) }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: configure ports on OVS bridges
+      openvswitch.openvswitch.openvswitch_port:
+        bridge: "{{ item.0.name }}"
+        port: "{{ item.1.name }}"
+        tag: "{{ item.1.tag | default(omit) }}"
+        set: "{{ item.1.set | default(omit) | list }}"
+        state: "{{ item.1.state | default(omit) }}"
+        external_ids: "{{ irem.1.external_ids | default(omit) }}"
+        timeout: "{{ item.1.timeout | default(omit) }}"
+        database_socket: "{{ item.1.database_socket | default(omit) }}"
+      loop: "{{ ( ovs_bridges | union( ovs_bridges_local | default([]) ) | subelements('ports') ) }}"
+      loop_control:
+        label: "{{ item.1.name }} on {{ item.0.name }}"
+      when: item.0.state == 'present'
+
+    - name: configure bonds on OVS bridges
+      openvswitch.openvswitch.openvswitch_bond:
+        bridge: "{{ item.0.name }}"
+        port: "{{ item.1.name }}"
+        interfaces: "{{ item.1.nics | default([]) }}"
+        bond_mode: "{{ item.1.bond_mode | default(omit) }}"
+        lacp: "{{ item.1.lacp | default(omit) }}"
+        other_config: "{{ item.1.other_config | default(omit) }}"
+        set: "{{ item.1.set | default(omit) }}"
+        state: "{{ item.1.state | default(omit) }}"
+        external_ids: "{{ irem.1.external_ids | default(omit) }}"
+        timeout: "{{ item.1.timeout | default(omit) }}"
+        database_socket: "{{ item.1.database_socket | default(omit) }}"
+      loop: "{{ ( ovs_bridges | union( ovs_bridges_local | default([]) ) | subelements('bonds') ) }}"
+      loop_control:
+        label: "{{ item.1.name }} on {{ item.0.name }}"
+      when:
+      - item.0.state == 'present'
+      - item.0.bonds is defined
+
+    - name: customizing OVS
+      openvswitch.openvswitch.openvswitch_db:
+        state: "{{ item.state | default('present') }}"
+        table: "{{ item.table }}"
+        record: "{{ item.rec }}"
+        col: "{{ item.key }}"
+        # key: "{{ item.subkey | default(omit) }}"
+        value: "{{ item.val | default(omit) }}"
+      loop: "{{ ovsdb_records | default([]) }}"
+      loop_control:
+        label: "{{ item.table }} {{ item.rec }} {{ item.key }} {{ item.subkey | default('') }} = {{ item.val | default('') }} "
+
+
+  - name: configure interfaces
+    include_role:
+      name: hvs_net

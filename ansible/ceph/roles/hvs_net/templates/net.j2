@@ -1,0 +1,14 @@
+{% if nic.type == 'unconfigured' %}
+config_{{ nic.name }}="null"
+rc_net_{{ nic.name }}_provide="!net"
+{% elif nic.type == 'dynamic' %}
+config_{{ nic.name }}="dhcp"
+{% elif nic.type == 'static' %}
+config_{{ nic.name }}="{{ nic.cidr }}"
+{% if nic.gw is defined %}
+routes_{{ nic.name }}="default via {{ nic.gw }}"
+{% endif -%}
+{% endif -%}
+{% if nic.internal is defined %}
+rc_net_{{ nic.name }}_need="ovs-vswitchd"
+{% endif -%}

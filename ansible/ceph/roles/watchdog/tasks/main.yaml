@@ -1,0 +1,20 @@
+# - name: Deb watchdog
+#   debug:
+#       msg: "Debug wd {{ inventory_hostname }} -- {{ wd_enabled }}"
+- name: Enable/disable watchdog kernel module on next restarts
+  kmodule:
+    name: "{{ wd_module }}"
+    args: "{{ wd_module_args | default(omit) }}"
+    state: "{{ wd_enabled | default(true) | ternary('present', 'absent') }}"
+  when:
+    - wd_module is defined
+
+- name: Load/unload watchdog kernel module
+  modprobe:
+    name: "{{ wd_module }}"
+    params: "{{ wd_module_args | default(omit) }}"
+    state: present
+  when:
+    - wd_module is defined
+    - wd_enabled
+  

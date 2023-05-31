@@ -1,0 +1,17 @@
+- name: ensure virtual port cofigured
+  openvswitch_port:
+    bridge: "{{ br_item.name }}"
+    port: "{{ item.name }}"
+    tag: "{{ item.tag|default('[]') }}"
+    state: "{{ item.state|default('present') }}"
+  loop: "{{ br_item.ports }}"
+
+- name: set interface type for ports
+  command: ovs-vsctl set Interface {{ item.name }} type={{ item.type | default('\"\"') }}
+  loop: "{{ br_item.ports }}"
+  when: item.state is not defined or item.state != 'absent'
+
+- name: ensure trunks settings for port
+  command: ovs-vsctl set Port {{ item.name }} trunks={{ item.trunks | default('[]') }}
+  loop: "{{ br_item.ports }}"
+  when: item.state is not defined or item.state != 'absent'

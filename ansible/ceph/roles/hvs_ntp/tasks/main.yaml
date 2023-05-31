@@ -1,0 +1,27 @@
+---
+
+- name: ensure NTP config dir exists
+  file:
+      path: /etc/ntp
+      state: directory
+
+- name: install NTP config validator
+  copy:
+      dest: /var/lib/ntp/validate_conf
+      src: validate_conf.sh
+      mode: 0755
+  tags: [ chk ]
+
+- name: generate NTP config
+  template:
+      dest: /etc/ntp.conf
+      src: ntp.conf.j2
+      validate: sh -f /var/lib/ntp/validate_conf %s
+  register: config
+  tags: [ chk ]
+
+- name: enable/disable NTP daemon
+  service:
+    name: ntpd
+    enabled: "{{ hvs_ntp_enabled | bool }}"
+    state: "{{ hvs_ntp_enabled | ternary(config.changed | ternary('restarted', 'started'), 'stopped') }}"

@@ -1,0 +1,31 @@
+---
+
+- name: stop net services on unused interfaces
+  service:
+    name: net.{{ nic.name }}
+    enabled: no
+    state: stopped
+  ignore_errors: true
+  loop: "{{ nic_list }}"
+  loop_control:
+    loop_var: nic
+  when: nic.absent is defined
+
+- name: remove links for unused interfaces
+  file:
+    path: /etc/init.d/net.{{ nic.name }} # required. path to the file being managed.  Aliases: I(dest), I(name)
+    state: absent
+  loop: "{{ nic_list }}"
+  loop_control:
+    loop_var: nic
+  when: nic.absent is defined
+
+- name: remove configs for unused interfaces
+  blockinfile:
+    path: /etc/conf.d/net
+    state: absent
+    marker: '# {mark} {{ nic.name }} config (managed)'
+  loop: "{{ nic_list }}"
+  loop_control:
+    loop_var: nic
+  when: nic.absent is defined

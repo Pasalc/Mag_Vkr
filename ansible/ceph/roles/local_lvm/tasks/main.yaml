@@ -1,0 +1,83 @@
+# - name: Destroy
+#   include_tasks: disable0.yaml
+#   when: destroy | bool
+
+# - name: Enable
+#   include_tasks: enable.yaml
+#   when: not destroy | bool
+
+- name: set array of PVss
+  set_fact:
+    pv_list: "{{ pv_list | default([]) + [ 'a|' + item.1 + '|' ] }}"
+  loop: "{{ vgs | default([]) | subelements('pvs') }}"
+  loop_control:
+    label: "{{ item.1 }}"
+
+
+- name: tweak config (setup)
+  lvm_conf:
+    # scope: local
+    list_action: "merge"
+    conf:
+      global:
+        locking_type: 1
+        use_lvmetad: 1
+        use_lvmlockd: 0
+      activation:
+        thin_pool_autoextend_threshold: 70
+        thin_pool_autoextend_percent: 20
+        reserved_stack: 64
+        reserved_memory: 8192
+      devices:
+        global_filter: "{{ pv_list | list }}"
+  when: not destroy | bool
+
+- name: create volume groups
+  lvg:
+    vg: "{{ item.vg }}"
+    pvs: "{{ item.pvs }}"
+    state: present
+  loop: "{{ vgs }}"
+  when: not destroy | bool
+
+- name: create/destroy volumes
+  lvol:
+    lv: "{{ item.lv }}"
+    vg: "{{ item.vg }}"
+    pvs: "{{ item.pvs | default(omit)}}"
+    size: "{{ item.size }}"
+    force: yes
+    state: "{{ destroy | bool | ternary('absent', 'present') }}"
+  loop: "{{ lvs }}"
+  
+- name: destroy LVM volume groups
+  lvg:
+    vg: "{{ item.vg }}"
+    pvs: "{{ item.pvs }}"
+    force: yes
+    state: absent
+  loop: "{{ vgs }}"
+  when: destroy | bool
+
+- name: wipe dropped physical volumes
+  command: "pvremove {{ item.1 }}"
+  loop: "{{ vgs | default([]) | subelements('pvs') }}"
+  when: destroy | bool
+
+- name: tweak config (setup)
+  lvm_conf:
+    # scope: local
+    list_action: "drop"
+    conf:
+      global:
+        locking_type: 1
+        use_lvmetad: 1
+        use_lvmlockd: 0
+      activation:
+        thin_pool_autoextend_threshold: 70
+        thin_pool_autoextend_percent: 20
+        reserved_stack: 64
+        reserved_memory: 8192
+      devices:
+        global_filter: "{{ pv_list | list }}"
+  when: destroy | bool

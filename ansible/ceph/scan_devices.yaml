@@ -1,0 +1,23 @@
+---
+- hosts: storage_devices
+  gather_facts: false
+
+  tasks:
+
+  - name: Scan devices
+    # command: lsblk -Jbao NAME,SERIAL,TYPE,WWN,TRAN,VENDOR,PARTLABEL,MOUNTPOINT,LABEL,SIZE,FSSIZE
+    command: lsblk -o NAME,TYPE,PARTLABEL,SIZE,MOUNTPOINT,LABEL,FSSIZE,WWN
+    # loop: "{{ groups['storage_devices'] }}"
+    register: lsblk
+    # run_once: true
+    # delegate_to: "{{ item }}"
+    when: true
+
+  - name: write
+    local_action:
+      module: template
+      dest: group_vars/storage_devices.yaml
+      src: device_list.yaml.j2
+    # loop: "{{ groups['storage_devices'] }}"
+    run_once: true
+    when: true

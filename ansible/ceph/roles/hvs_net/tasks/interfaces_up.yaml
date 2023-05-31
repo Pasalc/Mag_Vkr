@@ -1,0 +1,48 @@
+---
+
+- name: write configs for interfaces
+  blockinfile:
+    path: /etc/conf.d/net
+    create: yes
+    block: "{{ lookup('template', 'net.j2') }}"
+    marker: '# {mark} {{ nic.name }} config (managed)'
+  loop: "{{ nic_list }}"
+  loop_control:
+    loop_var: nic
+    label: "{{ nic.name }}"
+  when: nic.absent is not defined
+  register: nic_config
+
+- name: ensure links for present interfaces
+  file:
+    path: /etc/init.d/net.{{ nic.name }}
+    src: /etc/init.d/net.lo
+    state: link
+  loop: "{{ nic_list }}"
+  loop_control:
+    loop_var: nic
+    label: "{{ nic.name }}"
+  when: nic.absent is not defined
+
+- name: restart services for changed interfaces
+  service:
+    name: net.{{ nic_res.nic.name }}
+    enabled: "{{ nic_res.nic.enabled | default('yes') | bool }}"
+    state: "{{ ( nic_res.changed and ( nic_res.nic.state | default('started') )  == 'started' ) | ternary( 'restarted',  nic_res.nic.state | default('started') ) }}"
+  loop: "{{ nic_config.results }}"
+  loop_control:
+    loop_var: nic_res
+    label: "{{ nic_res.nic.name }}"
+  when:
+  - nic_res.nic.absent is not defined
+
+- name: cleanup links for absent interfaces
+  file:
+    path: /etc/init.d/net.{{ nic.name }}
+    src: /etc/init.d/net.lo
+    state: absent
+  loop: "{{ nic_list }}"
+  loop_control:
+    loop_var: nic
+    label: "{{ nic.name }}"
+  when: nic.absent is defined

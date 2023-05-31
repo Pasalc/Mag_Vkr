@@ -1,0 +1,33 @@
+---
+- hosts: t0
+  gather_facts: false
+
+  tasks:
+
+    - name: check iscsi initiator IQN configured
+      command: cat /etc/iscsi/initiatorname.iscsi
+      register: iname
+    
+    - name: ensure unique IQN for initiator
+      template:
+        src: initiatorname.iscsi.j2
+        dest: /etc/iscsi/initiatorname.iscsi
+      vars:
+        iqn: "{{ lookup('pipe', 'iscsi-iname') }}"
+      when: "'configured' not in iname.stdout"
+
+    - name: ensure iscsi service is up
+      service:
+        name: iscsid
+        enabled: yes
+        state: started
+    
+    - name: configure iscsi storage
+      open_iscsi:
+          portal: "{{ item.portal }}"
+          target: "{{ item.target }}"
+          login: true
+          auto_node_startup: true
+          discover: true
+      loop: "{{ iscsi_storage }}"
+          

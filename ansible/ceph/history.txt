@@ -1,0 +1,151 @@
+    1  mc
+    2  eselect profile list
+    3  emerge -av sys-apps/ipmitool
+    4  emerge -av sys-apps/ipmitool
+    5  exit
+    6  emerge -puDN @world
+    7   exit
+    8  tmux
+    9  cp -R /media/C7 ./
+   10  cp -R /media/C9 ./
+   11  ls -l
+   12  cd C9/
+   13  ls -l
+   14  cat hosts.yaml 
+   15  umount me
+   16  umount /media 
+   17  lsblk 
+   18  lsblk 
+   19  ls -l net.yaml 
+   20  ansible-playbook net.yaml 
+   21  ansible-playbook ntp.yaml 
+   22  ssh h1 lsblk 
+   23  ssh h1 for i in {e..l} a c \; do wipefs -a /dev/sd\$i ; done
+   24  ssh h1 for i in {e..l} a c \; do wipefs -a /dev/sd\$i \; done
+   25  ssh h1 lsblk 
+   26  ssh h2 lsblk 
+   27  ssh h2 for i in {a..h} k l \; do wipefs -a /dev/sd\$i \; done
+   28  ssh h3 lsblk 
+   29  ssh h3 for i in {c..l} \; do wipefs -a /dev/sd\$i \; done
+   30  ssh h3 lsblk 
+   31  ssh h4 lsblk 
+   32  ssh h4 for i in {a..h} k l \; do wipefs -a /dev/sd\$i \; done
+   33  ssh h4 lsblk 
+   34  ssh h5 lsblk 
+   35  ssh h5 for i in {a..h} k l \; do wipefs -a /dev/sd\$i \; done
+   36  ssh h5 lsblk 
+   37  ssh h6 lsblk 
+   38  ssh h6 for i in {a..h} k l \; do wipefs -a /dev/sd\$i \; done
+   39  ssh h6 lsblk 
+   40  ssh h7 lsblk 
+   41  ssh h7 for i in {a..h} k l \; do wipefs -a /dev/sd\$i \; done
+   42  ssh h7 lsblk 
+   43  ssh h8 lsblk 
+   44  ssh h8 for i in {a..i} k \; do wipefs -a /dev/sd\$i \; done
+   45  ssh h8 lsblk 
+   46  ssh h9 lsblk 
+   47  ssh h9 for i in {a..h} k l \; do wipefs -a /dev/sd\$i \; done
+   48  ssh h10 lsblk 
+   49  ssh h10 for i in {a..h} k l \; do wipefs -a /dev/sd\$i \; done
+   50  ssh h10 lsblk 
+   51  ssh h11 lsblk 
+   52  ssh h11 for i in {a..h} k l \; do wipefs -a /dev/sd\$i \; done
+   53  ssh h11 lsblk 
+   54  ssh h12 lsblk 
+   55  ssh h12 for i in {a..j} \; do wipefs -a /dev/sd\$i \; done
+   56  ssh h12 lsblk 
+   57  ssh h13 lsblk 
+   58  ssh h13 for i in {a..h} k l \; do wipefs -a /dev/sd\$i \; done
+   59  ssh h13 lsblk 
+   60  ssh h14 lsblk 
+   61  ssh h14 for i in {c..l} \; do wipefs -a /dev/sd\$i \; done
+   62  ssh h14 lsblk 
+   63  ssh h1 lsblk 
+   64  ssh h1 mdadm -C /dev/md0 -n4 -l0 /dev/sd[efgh] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[]ijkl
+   65  ssh h1 mdadm -C /dev/md0 -n4 -l0 /dev/sd[efgh] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[ijkl]
+   66  ssh h1 lsblk 
+   67  ssh h2 lsblk 
+   68  ssh h2 mdadm -C /dev/md0 -n4 -l0 /dev/sd[abcd] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[efgh]
+   69  ssh h2 lsblk 
+   70  ssh h3 lsblk 
+   71  ssh h3 mdadm -C /dev/md0 -n4 -l0 /dev/sd[cdef] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[ghij]
+   72  ssh h3 lsblk 
+   73  ssh h3 mdadm -C /dev/md0 -n4 -l0 /dev/sd[cdef] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[ghij]
+   74  ssh h3 lsblk 
+   75  ssh h3 mdadm -C /dev/md0 -n4 -l0 /dev/sd[cdef] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[ghij]
+   76  ssh h3 mdadm -C /dev/md0 -n4 -l0 /dev/sd[cdef] 
+   77  ssh h3
+   78  ssh h3 mdadm -C /dev/md0 -n4 -l0 /dev/sd[cdef] 
+   79  ssh h3 mdadm -C /dev/md0 -n4 -l0 /dev/sd[cdef] 
+   80  ssh h3
+   81  ssh h3 lsblk 
+   82  ssh h4 lsblk 
+   83  ssh h4 mdadm -C /dev/md0 -n4 -l0 /dev/sd[abcd] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[efgh]
+   84  ssh h4 lsblk 
+   85  ssh h5 lsblk 
+   86  ssh h5 mdadm -C /dev/md0 -n4 -l0 /dev/sd[abcd] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[efgh]
+   87  ssh h5 lsblk 
+   88  ssh h6 lsblk 
+   89  ssh h6 mdadm -C /dev/md0 -n4 -l0 /dev/sd[abcd] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[efgh]
+   90  ssh h6 lsblk 
+   91  ssh h7 lsblk 
+   92  ssh h7 mdadm -C /dev/md0 -n4 -l0 /dev/sd[abcd] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[efgh]
+   93  ssh h7 lsblk 
+   94  ssh h8 lsblk 
+   95  ssh h8 mdadm -C /dev/md0 -n4 -l0 /dev/sd[abcd] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[efgh]
+   96  ssh h8 lsblk 
+   97  ssh h9 lsblk 
+   98  ssh h9 mdadm -C /dev/md0 -n4 -l0 /dev/sd[abcd] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[efgh]
+   99  ssh h9 lsblk 
+  100  ssh h10 lsblk 
+  101  ssh h10 mdadm -C /dev/md0 -n4 -l0 /dev/sd[abcd] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[efgh]
+  102  ssh h10 lsblk 
+  103  ssh h11 lsblk 
+  104  ssh h11 mdadm -C /dev/md0 -n4 -l0 /dev/sd[abcd] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[efgh]
+  105  ssh h11 lsblk 
+  106  ssh h12 lsblk 
+  107  ssh h12 lsblk 
+  108  ssh h11 lsblk 
+  109  ssh h12 lsblk 
+  110  ssh h12 mdadm -C /dev/md0 -n4 -l0 /dev/sd[abcd] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[efgh]
+  111  ssh h12 lsblk 
+  112  ssh h13 lsblk 
+  113  ssh h13 mdadm -C /dev/md0 -n4 -l0 /dev/sd[abcd] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[efgh]
+  114  ssh h13 lsblk 
+  115  ssh h14 lsblk 
+  116  ssh h14 mdadm -C /dev/md0 -n4 -l0 /dev/sd[efgh] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[ijkl]
+  117  ssh h14 lsblk 
+  118  ssh h1 lsblk 
+  119  ssh h1 ls -l /dev/disk/by-ig/ | grep -E 'md0|md3|sda|sdc' | grep -v -E 'wwn|name' 
+  120  ssh h1 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sda|sdc' | grep -v -E 'wwn|name' 
+  121  ssh h2 lsblk 
+  122  ssh h2 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sdk|sdl' | grep -v -E 'wwn|name' 
+  123  ssh h3
+  124  ssh h3 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sdc|sdd' | grep -v -E 'wwn|name' 
+  125  ssh h4 lsblk 
+  126  ssh h4 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sdk|sdl' | grep -v -E 'wwn|name' 
+  127  ssh h5 lsblk 
+  128  ssh h5 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sdk|sdl' | grep -v -E 'wwn|name' 
+  129  ssh h6 lsblk 
+  130  ssh h6 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sdk|sdl' | grep -v -E 'wwn|name' 
+  131  ssh h6 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sdk|sdl' | grep -v -E 'wwn|name' 
+  132  ssh h7 lsblk 
+  133  ssh h7 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sdk|sdl' | grep -v -E 'wwn|name' 
+  134  ssh h8 lsblk 
+  135  ssh h8 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sdk|sdi' | grep -v -E 'wwn|name' 
+  136  ssh h9 lsblk 
+  137  ssh h9 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sdk|sdl' | grep -v -E 'wwn|name' 
+  138  ssh h10 lsblk 
+  139  ssh h10 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sdk|sdl' | grep -v -E 'wwn|name' 
+  140  ssh h11 lsblk 
+  141  ssh h11 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sdk|sdl' | grep -v -E 'wwn|name' 
+  142  ssh h12 lsblk 
+  143  ssh h12 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sdi|sdj' | grep -v -E 'wwn|name' 
+  144  ssh h13 lsblk 
+  145  ssh h13 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sdk|sdl' | grep -v -E 'wwn|name' 
+  146  ssh h14 lsblk 
+  147  ssh h14 ls -l /dev/disk/by-id/ | grep -E 'md0|md3|sdc|sdd' | grep -v -E 'wwn|name' 
+  148  ls -l
+  149  cd ../
+  150  cd C10/
+  151  history > history.txt

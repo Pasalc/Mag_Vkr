@@ -1,0 +1,5 @@
+destroy: false
+lvm_thin_pool_autoextend_threshold: 70
+lvm_activation_reserved_stack: 2048
+lvm_activation_reserved_memory: 131072
+lvmlockd_lock_retries: 3

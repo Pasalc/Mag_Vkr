@@ -1,11 +1,5 @@
 ---
 - name: Backup federation
-  community.docker.docker_container_exec:
-    container: "{{ container_name }}"
-    command: "{{ onedb }} backup -u{{ onedb_user }} -p{{ onedb_pass }} -d federated opennebula"
+  shell: "docker exec {{container_name}} onedb backup -f --federated -u{{ onedb_user }} -p{{ onedb_pass }} -d opennebula {{fedDB_path_docker}}"
 - name: Copy backup to host
   shell: "docker cp {{container_name}}:{{fedDB_path_docker}} {{fedDB_path}}"
-- name: Copy backup to localhost
-  fetch:
-    src: "{{ fedDB_path }}"
-    dest: "{{ fedDB_path_local }}"

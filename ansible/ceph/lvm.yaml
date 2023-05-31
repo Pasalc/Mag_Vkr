@@ -1,0 +1,44 @@
+---
+- hosts: local_lvm
+  gather_facts: false
+
+  tasks:
+
+  - name: configure local lvm
+    include_role:
+      name: local_lvm
+
+  # - name: configure local LVM
+  #   include_role:
+  #     name: local_lvm
+
+
+
+- hosts: shared_lvm
+  gather_facts: false
+
+  tasks:
+
+  - name: enable watchdog module for sanlock shared lvm hosts
+    include_role:
+      name: watchdog
+    when: wd_enabled
+    
+
+  - name: configure sunlock shared LVM
+    include_role:
+      name: sanlock_shared_lvm
+
+
+  - name: disable watchdog module for sanlock shared lvm hosts
+    include_role:
+      name: watchdog
+    when: not wd_enabled
+
+  # - name: setup sunlock shared LVM
+  #   include_tasks: lvm_sanlock_shared.yaml
+  #   loop: "{{ sanlock_shared_lvm_groups | map('extract', groups) | list }}"
+  #   loop_control:
+  #     loop_var: sanlock_shared_lvm_group
+  #   when: inventory_hostname in sanlock_shared_lvm_group
+

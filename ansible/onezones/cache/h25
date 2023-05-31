@@ -1,0 +1,203 @@
+discovered_interpreter_python: /usr/bin/python
+docker_container:
+  AppArmorProfile: ''
+  Args: []
+  Config:
+    AttachStderr: false
+    AttachStdin: false
+    AttachStdout: false
+    Cmd: null
+    Domainname: ''
+    Entrypoint:
+    - docker-entrypoint
+    Env:
+    - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    - HCS_VERSION=1.1.27
+    - LC_ALL=en_US.utf8
+    - LANG=en_US.utf8
+    Hostname: h25
+    Image: hcs:latest
+    Labels: {}
+    OnBuild: null
+    OpenStdin: false
+    StdinOnce: false
+    StopTimeout: 90
+    Tty: false
+    User: ''
+    Volumes: null
+    WorkingDir: /
+  Created: '2023-05-02T11:57:38.32346731Z'
+  Driver: overlay2
+  ExecIDs: null
+  GraphDriver:
+    Data:
+      LowerDir: /data/0/docker/overlay2/1eec6e5bcc089042601f78b7173b696de033220e24608f26e0add54f39bc3fee-init/diff:/data/0/docker/overlay2/9cfe647f983a130950aff255b4b0aec88d1115569db4da4f7c79054ef61cfb09/diff
+      MergedDir: /data/0/docker/overlay2/1eec6e5bcc089042601f78b7173b696de033220e24608f26e0add54f39bc3fee/merged
+      UpperDir: /data/0/docker/overlay2/1eec6e5bcc089042601f78b7173b696de033220e24608f26e0add54f39bc3fee/diff
+      WorkDir: /data/0/docker/overlay2/1eec6e5bcc089042601f78b7173b696de033220e24608f26e0add54f39bc3fee/work
+    Name: overlay2
+  HostConfig:
+    AutoRemove: false
+    Binds:
+    - hvol:/hvol:rw
+    - /var/tmp:/var/tmp:rw
+    BlkioDeviceReadBps: null
+    BlkioDeviceReadIOps: null
+    BlkioDeviceWriteBps: null
+    BlkioDeviceWriteIOps: null
+    BlkioWeight: 0
+    BlkioWeightDevice: null
+    CapAdd: null
+    CapDrop: null
+    Capabilities: null
+    Cgroup: ''
+    CgroupParent: ''
+    ConsoleSize:
+    - 0
+    - 0
+    ContainerIDFile: ''
+    CpuCount: 0
+    CpuPercent: 0
+    CpuPeriod: 0
+    CpuQuota: 0
+    CpuRealtimePeriod: 0
+    CpuRealtimeRuntime: 0
+    CpuShares: 0
+    CpusetCpus: ''
+    CpusetMems: ''
+    DeviceCgroupRules: null
+    DeviceRequests: null
+    Devices: null
+    Dns: null
+    DnsOptions: null
+    DnsSearch: null
+    ExtraHosts: null
+    GroupAdd: null
+    IOMaximumBandwidth: 0
+    IOMaximumIOps: 0
+    Init: false
+    IpcMode: private
+    Isolation: ''
+    KernelMemory: 0
+    KernelMemoryTCP: 0
+    Links: null
+    LogConfig:
+      Config:
+        max-file: '5'
+        max-size: 10m
+      Type: json-file
+    MaskedPaths:
+    - /proc/asound
+    - /proc/acpi
+    - /proc/kcore
+    - /proc/keys
+    - /proc/latency_stats
+    - /proc/timer_list
+    - /proc/timer_stats
+    - /proc/sched_debug
+    - /proc/scsi
+    - /sys/firmware
+    Memory: 0
+    MemoryReservation: 0
+    MemorySwap: 0
+    MemorySwappiness: null
+    NanoCpus: 0
+    NetworkMode: host
+    OomKillDisable: false
+    OomScoreAdj: 0
+    PidMode: ''
+    PidsLimit: null
+    PortBindings: null
+    Privileged: false
+    PublishAllPorts: false
+    ReadonlyPaths:
+    - /proc/bus
+    - /proc/fs
+    - /proc/irq
+    - /proc/sys
+    - /proc/sysrq-trigger
+    ReadonlyRootfs: false
+    RestartPolicy:
+      MaximumRetryCount: 0
+      Name: always
+    Runtime: runc
+    SecurityOpt:
+    - seccomp:unconfined
+    ShmSize: 67108864
+    UTSMode: ''
+    Ulimits: null
+    UsernsMode: ''
+    VolumeDriver: ''
+    VolumesFrom: null
+  HostnamePath: /data/0/docker/containers/a496e1099a984af51b3553695f8500ad80e2c6bf076f9eec5a2d7d629e017328/hostname
+  HostsPath: /data/0/docker/containers/a496e1099a984af51b3553695f8500ad80e2c6bf076f9eec5a2d7d629e017328/hosts
+  Id: a496e1099a984af51b3553695f8500ad80e2c6bf076f9eec5a2d7d629e017328
+  Image: sha256:677f43fc6fa5e34d94ad13e405dcdcef8e47f18427667df8162fc7f5dbbc62d8
+  LogPath: /data/0/docker/containers/a496e1099a984af51b3553695f8500ad80e2c6bf076f9eec5a2d7d629e017328/a496e1099a984af51b3553695f8500ad80e2c6bf076f9eec5a2d7d629e017328-json.log
+  MountLabel: ''
+  Mounts:
+  - Destination: /hvol
+    Driver: local
+    Mode: rw
+    Name: hvol
+    Propagation: ''
+    RW: true
+    Source: /data/0/docker/volumes/hvol/_data
+    Type: volume
+  - Destination: /var/tmp
+    Mode: rw
+    Propagation: rprivate
+    RW: true
+    Source: /var/tmp
+    Type: bind
+  Name: /hcs
+  NetworkSettings:
+    Bridge: ''
+    EndpointID: ''
+    Gateway: ''
+    GlobalIPv6Address: ''
+    GlobalIPv6PrefixLen: 0
+    HairpinMode: false
+    IPAddress: ''
+    IPPrefixLen: 0
+    IPv6Gateway: ''
+    LinkLocalIPv6Address: ''
+    LinkLocalIPv6PrefixLen: 0
+    MacAddress: ''
+    Networks:
+      host:
+        Aliases: null
+        DriverOpts: null
+        EndpointID: 4b885a1041cf440217fd14a785c41e86777316f3574c87a7c4ebd65d2049d111
+        Gateway: ''
+        GlobalIPv6Address: ''
+        GlobalIPv6PrefixLen: 0
+        IPAMConfig: null
+        IPAddress: ''
+        IPPrefixLen: 0
+        IPv6Gateway: ''
+        Links: null
+        MacAddress: ''
+        NetworkID: 4142dce82a4d0938280870efe7881b4d56399b10b59e7aa14abd9c2bd0ac709a
+    Ports: {}
+    SandboxID: 4b9ec75b133aff56794af0e88db0184786db9c0a7169ed4cd03bbf547a441559
+    SandboxKey: /var/run/docker/netns/default
+    SecondaryIPAddresses: null
+    SecondaryIPv6Addresses: null
+  Path: docker-entrypoint
+  Platform: linux
+  ProcessLabel: ''
+  ResolvConfPath: /data/0/docker/containers/a496e1099a984af51b3553695f8500ad80e2c6bf076f9eec5a2d7d629e017328/resolv.conf
+  RestartCount: 0
+  State:
+    Dead: false
+    Error: ''
+    ExitCode: 0
+    FinishedAt: '0001-01-01T00:00:00Z'
+    OOMKilled: false
+    Paused: false
+    Pid: 104739
+    Restarting: false
+    Running: true
+    StartedAt: '2023-05-02T11:57:38.464289352Z'
+    Status: running

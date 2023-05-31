@@ -1,0 +1,6 @@
+hvs_ntp_enabled: false
+hvs_ntp_upstreams: []
+hvs_ntp_pools: []
+hvs_ntp_peers: []
+hvs_ntp_nics:
+- sys0

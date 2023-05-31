@@ -1,0 +1,407 @@
+# LIST OF AVAILABLE DEVICES
+
+# -- h1 --
+#NAME            TYPE  PARTLABEL   SIZE MOUNTPOINT LABEL          FSSIZE WWN
+#sda             disk            119,2G                                  
+#├─sda1          part  H_BOOT      100M            HB09141422            
+#├─sda2          part  H_BOOT2     100M                                  
+#└─sda3          part              119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdb             disk            119,2G                                  
+#├─sdb1          part  H_BOOT      100M                                  
+#├─sdb2          part  H_BOOT2     100M                                  
+#└─sdb3          part  H_ROOT      119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdc             disk              1,8T                                  0x55cd2e41552e8ab8
+#sdd             disk              1,8T                                  0x55cd2e41552e8b6b
+#sde             disk              3,7T            h1:0                  0x5000cca095d1bb80
+#└─md125         raid0            14,6T                                  
+#sdf             disk              3,7T            h1:0                  0x5000cca095d1a8f5
+#└─md125         raid0            14,6T                                  
+#sdg             disk              3,7T            h1:0                  0x5000cca095d1ba97
+#└─md125         raid0            14,6T                                  
+#sdh             disk              3,7T            h1:0                  0x5000cca095d1c1e6
+#└─md125         raid0            14,6T                                  
+#sdi             disk              3,7T            h1:1                  0x5000cca095d18b06
+#└─md126         raid0            14,6T                                  
+#sdj             disk              3,7T            h1:1                  0x5000cca095d1c236
+#└─md126         raid0            14,6T                                  
+#sdk             disk              3,7T            h1:1                  0x5000cca095d10ca4
+#└─md126         raid0            14,6T                                  
+#sdl             disk              3,7T            h1:1                  0x5000cca095d1c264
+#└─md126         raid0            14,6T                                  
+
+# -- h2 --
+#NAME            TYPE  PARTLABEL   SIZE MOUNTPOINT LABEL          FSSIZE WWN
+#sda             disk              3,7T            h2:0                  0x5000cca095d1b3a0
+#└─md0           raid0            14,6T                                  
+#sdb             disk              3,7T            h2:0                  0x5000cca095d1bb5e
+#└─md0           raid0            14,6T                                  
+#sdc             disk              3,7T            h2:0                  0x5000cca095d1c216
+#└─md0           raid0            14,6T                                  
+#sdd             disk              3,7T            h2:0                  0x5000cca095d1c209
+#└─md0           raid0            14,6T                                  
+#sde             disk              3,7T            h2:1                  0x5000cca095d1bb89
+#└─md1           raid0            14,6T                                  
+#sdf             disk              3,7T            h2:1                  0x5000cca095d1af2e
+#└─md1           raid0            14,6T                                  
+#sdg             disk              3,7T            h2:1                  0x5000cca095d1c84e
+#└─md1           raid0            14,6T                                  
+#sdh             disk              3,7T            h2:1                  0x5000cca095d1bade
+#└─md1           raid0            14,6T                                  
+#sdi             disk            119,2G                                  
+#├─sdi1          part  H_BOOT      100M            HB09141422            
+#├─sdi2          part  H_BOOT2     100M                                  
+#└─sdi3          part              119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdj             disk            119,2G                                  
+#├─sdj1          part  H_BOOT      100M                                  
+#├─sdj2          part  H_BOOT2     100M                                  
+#└─sdj3          part  H_ROOT      119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdk             disk              1,8T                                  0x55cd2e415524fad7
+#sdl             disk              1,8T                                  0x55cd2e415524fad2
+
+# -- h3 --
+#NAME            TYPE  PARTLABEL   SIZE MOUNTPOINT LABEL          FSSIZE WWN
+#sda             disk              3,7T            h3:0                  0x5000cca095d1d264
+#└─md0           raid0            14,6T                                  
+#sdb             disk              3,7T            h3:0                  0x5000cca095d1d21e
+#└─md0           raid0            14,6T                                  
+#sdc             disk              3,7T            h3:0                  0x5000cca095d1d219
+#└─md0           raid0            14,6T                                  
+#sdd             disk              3,7T            h3:0                  0x5000cca095d1b4b3
+#└─md0           raid0            14,6T                                  
+#sde             disk              3,7T            h3:1                  0x5000cca095d1c159
+#└─md1           raid0            14,6T                                  
+#sdf             disk              3,7T            h3:1                  0x5000cca095d18a34
+#└─md1           raid0            14,6T                                  
+#sdg             disk              3,7T            h3:1                  0x5000cca095d18a4c
+#└─md1           raid0            14,6T                                  
+#sdh             disk              3,7T            h3:1                  0x5000cca095d1c24f
+#└─md1           raid0            14,6T                                  
+#sdi             disk            119,2G                                  
+#├─sdi1          part  H_BOOT      100M            HB09141422            
+#├─sdi2          part  H_BOOT2     100M                                  
+#└─sdi3          part              119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdj             disk            119,2G                                  
+#├─sdj1          part  H_BOOT      100M                                  
+#├─sdj2          part  H_BOOT2     100M                                  
+#└─sdj3          part  H_ROOT      119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdk             disk              1,8T                                  0x55cd2e41552513dd
+#sdl             disk              1,8T                                  0x55cd2e41552e64ee
+
+# -- h4 --
+#NAME            TYPE  PARTLABEL   SIZE MOUNTPOINT LABEL          FSSIZE WWN
+#sda             disk              3,7T            h4:0                  0x5000cca095d1afb0
+#└─md0           raid0            14,6T                                  
+#sdb             disk              3,7T            h4:0                  0x5000cca095d1a540
+#└─md0           raid0            14,6T                                  
+#sdc             disk              3,7T            h4:0                  0x5000cca095d1b234
+#└─md0           raid0            14,6T                                  
+#sdd             disk              3,7T            h4:0                  0x5000cca095d1b140
+#└─md0           raid0            14,6T                                  
+#sde             disk              3,7T            h4:1                  0x5000cca095d1a5cb
+#└─md1           raid0            14,6T                                  
+#sdf             disk              3,7T            h4:1                  0x5000cca095d181fa
+#└─md1           raid0            14,6T                                  
+#sdg             disk              3,7T            h4:1                  0x5000cca095d1c324
+#└─md1           raid0            14,6T                                  
+#sdh             disk              3,7T            h4:1                  0x5000cca095d1c2c5
+#└─md1           raid0            14,6T                                  
+#sdi             disk            119,2G                                  
+#├─sdi1          part  H_BOOT      100M            HB09141422            
+#├─sdi2          part  H_BOOT2     100M                                  
+#└─sdi3          part              119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdj             disk            119,2G                                  
+#├─sdj1          part  H_BOOT      100M                                  
+#├─sdj2          part  H_BOOT2     100M                                  
+#└─sdj3          part  H_ROOT      119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdk             disk              1,8T                                  0x55cd2e41552e8bc2
+#sdl             disk              1,8T                                  0x55cd2e41552e8aab
+
+# -- h5 --
+#NAME            TYPE  PARTLABEL   SIZE MOUNTPOINT LABEL          FSSIZE WWN
+#sda             disk              3,7T            h5:0                  0x5000cca095d1c238
+#└─md0           raid0            14,6T                                  
+#sdb             disk              3,7T            h5:0                  0x5000cca095d1c80c
+#└─md0           raid0            14,6T                                  
+#sdc             disk              3,7T            h5:0                  0x5000cca095d1c1cb
+#└─md0           raid0            14,6T                                  
+#sdd             disk              3,7T            h5:0                  0x5000cca095d1c235
+#└─md0           raid0            14,6T                                  
+#sde             disk              3,7T            h5:1                  0x5000cca095d191a1
+#└─md1           raid0            14,6T                                  
+#sdf             disk              3,7T            h5:1                  0x5000cca095d1c23d
+#└─md1           raid0            14,6T                                  
+#sdg             disk              3,7T            h5:1                  0x5000cca095d1c6e4
+#└─md1           raid0            14,6T                                  
+#sdh             disk              3,7T            h5:1                  0x5000cca095d1d27f
+#└─md1           raid0            14,6T                                  
+#sdi             disk            119,2G                                  
+#├─sdi1          part  H_BOOT      100M            HB09141422            
+#├─sdi2          part  H_BOOT2     100M                                  
+#└─sdi3          part              119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdj             disk            119,2G                                  
+#├─sdj1          part  H_BOOT      100M                                  
+#├─sdj2          part  H_BOOT2     100M                                  
+#└─sdj3          part  H_ROOT      119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdk             disk              1,8T                                  0x55cd2e41552e8af4
+#sdl             disk              1,8T                                  0x55cd2e415525161d
+
+# -- h6 --
+#NAME            TYPE  PARTLABEL   SIZE MOUNTPOINT LABEL          FSSIZE WWN
+#sda             disk              3,7T            h6:0                  0x5000cca095d1af9d
+#└─md0           raid0            14,6T                                  
+#sdb             disk              3,7T            h6:0                  0x5000cca095d1c314
+#└─md0           raid0            14,6T                                  
+#sdc             disk              3,7T            h6:0                  0x5000cca095d1b0ff
+#└─md0           raid0            14,6T                                  
+#sdd             disk              3,7T            h6:0                  0x5000cca095d1c7d1
+#└─md0           raid0            14,6T                                  
+#sde             disk              3,7T            h6:1                  0x5000cca095d1b048
+#└─md1           raid0            14,6T                                  
+#sdf             disk              3,7T            h6:1                  0x5000cca095d18676
+#└─md1           raid0            14,6T                                  
+#sdg             disk              3,7T            h6:1                  0x5000cca095d1c327
+#└─md1           raid0            14,6T                                  
+#sdh             disk              3,7T            h6:1                  0x5000cca095d1bc38
+#└─md1           raid0            14,6T                                  
+#sdi             disk            119,2G                                  
+#├─sdi1          part  H_BOOT      100M            HB09141422            
+#├─sdi2          part  H_BOOT2     100M                                  
+#└─sdi3          part              119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdj             disk            119,2G                                  
+#├─sdj1          part  H_BOOT      100M                                  
+#├─sdj2          part  H_BOOT2     100M                                  
+#└─sdj3          part  H_ROOT      119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdk             disk              1,8T                                  0x55cd2e41552e8ab6
+#sdl             disk              1,8T                                  0x55cd2e415524fabe
+
+# -- h7 --
+#NAME            TYPE  PARTLABEL   SIZE MOUNTPOINT LABEL          FSSIZE WWN
+#sda             disk              3,7T            h7:0                  0x5000cca095d1c0c9
+#└─md0           raid0            14,6T                                  
+#sdb             disk              3,7T            h7:0                  0x5000cca095d1c836
+#└─md0           raid0            14,6T                                  
+#sdc             disk              3,7T            h7:0                  0x5000cca095d1d28c
+#└─md0           raid0            14,6T                                  
+#sdd             disk              3,7T            h7:0                  0x5000cca095d1c822
+#└─md0           raid0            14,6T                                  
+#sde             disk              3,7T            h7:1                  0x5000cca095d1c80d
+#└─md1           raid0            14,6T                                  
+#sdf             disk              3,7T            h7:1                  0x5000cca095d1c78a
+#└─md1           raid0            14,6T                                  
+#sdg             disk              3,7T            h7:1                  0x5000cca095d1a7ac
+#└─md1           raid0            14,6T                                  
+#sdh             disk              3,7T            h7:1                  0x5000cca095d1d277
+#└─md1           raid0            14,6T                                  
+#sdi             disk            119,2G                                  
+#├─sdi1          part  H_BOOT      100M            HB09141422            
+#├─sdi2          part  H_BOOT2     100M                                  
+#└─sdi3          part              119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdj             disk            119,2G                                  
+#├─sdj1          part  H_BOOT      100M                                  
+#├─sdj2          part  H_BOOT2     100M                                  
+#└─sdj3          part  H_ROOT      119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdk             disk              1,8T                                  0x55cd2e415536249c
+#sdl             disk              1,8T                                  0x55cd2e41552e8ad5
+
+# -- h8 --
+#NAME            TYPE  PARTLABEL   SIZE MOUNTPOINT LABEL          FSSIZE WWN
+#sda             disk              3,7T            h8:0                  0x5000cca095d1b0f2
+#└─md0           raid0            14,6T                                  
+#sdb             disk              3,7T            h8:0                  0x5000cca0bccb518d
+#└─md0           raid0            14,6T                                  
+#sdc             disk              3,7T            h8:0                  0x5000cca095d1a71e
+#└─md0           raid0            14,6T                                  
+#sdd             disk              3,7T            h8:0                  0x5000cca0bccb3635
+#└─md0           raid0            14,6T                                  
+#sde             disk              3,7T            h8:1                  0x5000cca095d1b010
+#└─md1           raid0            14,6T                                  
+#sdf             disk              3,7T            h8:1                  0x5000cca095d1ab42
+#└─md1           raid0            14,6T                                  
+#sdg             disk              3,7T            h8:1                  0x5000cca0bccc99a9
+#└─md1           raid0            14,6T                                  
+#sdh             disk              3,7T            h8:1                  0x5000cca0bccc267e
+#└─md1           raid0            14,6T                                  
+#sdi             disk            119,2G                                  
+#├─sdi1          part  H_BOOT      100M            HB09141422            
+#├─sdi2          part  H_BOOT2     100M                                  
+#└─sdi3          part              119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdj             disk            119,2G                                  
+#├─sdj1          part  H_BOOT      100M                                  
+#├─sdj2          part  H_BOOT2     100M                                  
+#└─sdj3          part  H_ROOT      119G            6068cf31c4cb:0        
+#  └─md127       raid1             119G                                  
+#    ├─hvs-root  lvm                10G /          HR09141422       9,8G 
+#    ├─hvs-root2 lvm                10G                                  
+#    └─hvs-data  lvm                99G /data/0    H_DATA            99G 
+#sdk             disk              1,8T                                  0x55cd2e41553826c8
+#sdl             disk              1,8T                                  0x55cd2e41553623c0
+
+
+#  can be specified with all the units supported by parted (except compat) and it is case sensitive, e.g. 10GiB, 15%
+# partitions:
+# - device: /dev/sdd
+#   label: PARTLABEL # optional
+#   num: 1
+#   start: 0%
+#   end: 10%
+# - device: /dev/sdd
+#   num: 2
+#   start: 10%
+#   end: 100%
+
+
+
+# lvm configuration 
+# 
+# volume groups named 'osdX' (e.g. osd0, osd1 ...) would be used for CEPH OSD
+# these VG must contain only LVs for bluestore OSD 'data' LV is required,
+# 'wal' and 'db' are optional
+#
+# General recomendation - place devices for particular OSD (DATA,WAL,DB) in separate VG,
+# then create volumes dedicated to coresponding physical volumes
+#
+# Separate volumes for WAL and DB have benefits only if placed on faster media. In lack of space on fast media you should
+# prefer WAL separation over DB
+#
+# Recomendation on sizing:
+#   - WAL volume should be not less then 1G
+#   - DB volume should have 1% to 2% of DATA for RBD workload (4% for RGW)
+
+# example of configuration
+
+# vgs:
+
+# - vg: osd0
+#   pvs:
+#   - /dev/sdb
+#   - /dev/sdd1
+
+# - vg: osd1
+#   pvs:
+#   - /dev/sdc
+#   - /dev/sdd2
+
+
+# size of volume, according to lvcreate(8) --size, by default in megabytes or optionally with one of [bBsSkKmMgGtTpPeE] units;
+# or according to lvcreate(8) --extents as a percentage of [VG|PVS|FREE];
+# Float values must begin with a digit.
+# 
+# lvs:
+# 
+# - lv: data
+#   size: 100%PVS
+#   vg: osd0
+#   pvs: /dev/sdb
+#
+# - lv: wal
+#   size: 100%PVS
+#   vg: osd0
+#   pvs: /dev/sdd1
+# 
+# - lv: data
+#   size: 85%PVS
+#   vg: osd1
+#   pvs: /dev/sdc
+# 
+# - lv: wal
+#   size: 1%PVS
+#   vg: osd1
+#   pvs: /dev/sdd2
+# 
+# - lv: DB
+#   size: 2%PVS
+#   vg: osd1
+#   pvs: /dev/sdd2
+# 
+lvs:
+- lv: data
+  size: 100%VG
+  vg: osd0
+
+- lv: data
+  size: 100%VG
+  vg: osd1
+
+- lv: wal0
+  size: 5G
+  vg: aux0
+
+- lv: db0
+  size: 200G
+  vg: aux0
+
+- lv: wal1
+  size: 5G
+  vg: aux1
+
+- lv: db1
+  size: 200G
+  vg: aux1
+
+- lv: osd2
+  size: 100%FREE
+  vg: aux0
+
+- lv: osd3
+  size: 100%FREE
+  vg: aux1

@@ -1,0 +1,90 @@
+---
+ovsdb_records:
+- table: Interface
+  rec: cephA
+  key: mtu_request
+  val: 9000
+
+- table: Interface
+  rec: cephB
+  key: mtu_request
+  val: 9000
+
+- table: Interface
+  rec: enp173s0f0
+  key: mtu_request
+  val: 9000
+
+- table: Interface
+  rec: enp173s0f1
+  key: mtu_request
+  val: 9000
+
+- table: Interface
+  rec: enp215s0f0
+  key: mtu_request
+  val: 9000
+
+- table: Interface
+  rec: enp215s0f1
+  key: mtu_request
+  # key: other_config
+  # subkey: lacp-time
+  # val: fast
+  val: 9000
+
+ovs_bridges:
+- name: n0
+  state: present
+  ports:
+  - name: mgmt0
+    tag: 1001
+    set:
+    - Interface mgmt0 type=internal
+  - name: cephA
+    tag: 1001
+    set:
+    - Interface cephA type=internal
+  - name: cephB
+    tag: 1002
+    set:
+    - Interface cephB type=internal
+  bonds:
+  - name: bond0
+    bond_mode: balance-tcp
+    lacp: active
+    other_config:
+      lacp-time: fast
+    set:
+    - Port bond0 trunks=[1001,1002,1003]
+    nics:
+    - enp173s0f0
+    - enp215s0f0
+- name: n1
+  state: present
+  ports:
+  - name: ext0
+    tag: 101
+    set:
+    - Interface ext0 type=internal
+  bonds:
+  - name: bond1
+    bond_mode: balance-tcp
+    lacp: active
+    other_config:
+      lacp-time: fast
+    set:
+    - Port bond1 trunks=[20,101]
+    nics:
+    - enp173s0f1
+    - enp215s0f1
+
+nics:
+- name: enp173s0f0
+  type: unconfigured
+- name: enp173s0f1
+  type: unconfigured
+- name: enp215s0f0
+  type: unconfigured
+- name: enp215s0f1
+  type: unconfigured

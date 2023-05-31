@@ -1,0 +1,8 @@
+Defaults:oneadmin !requiretty
+Defaults:oneadmin secure_path = /sbin:/bin:/usr/sbin:/usr/bin
+
+{% for alias in one_sudoers_aliases %}
+Cmnd_Alias {{ alias.name }} = {{ lookup('lines', (['which '] + alias.commands)|join(' ') ) }}
+{% endfor %}
+
+%oneadmin ALL=(ALL) NOPASSWD: {{ one_sudoers_aliases | map(attribute='name') | join(', ') }}

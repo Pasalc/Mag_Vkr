@@ -1,0 +1,5 @@
+---
+- hosts: ntp
+
+  roles:
+    - hvs_ntp

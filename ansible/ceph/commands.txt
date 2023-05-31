@@ -1,0 +1,21 @@
+cd collections
+
+ansible-galaxy collection install -r requirements.yml
+
+for i in {} ; do ssh h$i date ; done 2>/dev/null
+
+
+
+ansible-playbook net.yaml 
+
+ansible-playbook ntp.yaml 
+
+ssh h1 lsblk
+
+ssh h1 for i in {e..l} a c \; do wipefs -a /dev/sd\$i \; done
+
+ssh h1 mdadm -C /dev/md0 -n4 -l0 /dev/sd[efgh] \; mdadm -C /dev/md3 -n4 -l0 /dev/sd[ijkl]
+
+ceph osd crush rule ls
+
+ceph osd crush rule rm replicated_rule

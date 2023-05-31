@@ -1,0 +1,42 @@
+vgs:
+- vg: osd0
+  pvs:
+  - /dev/disk/by-id/
+
+- vg: osd1
+  pvs:
+  - /dev/disk/by-id/
+
+- vg: aux0
+  pvs:
+  - /dev/disk/by-id/
+
+- vg: aux1
+  pvs:
+  - /dev/disk/by-id/
+
+
+
+
+
+nics_local:
+- name: cephA
+  internal:
+  type: static
+  cidr: 10.0.23.71/24
+- name: cephB
+  internal:
+  type: static
+  cidr: 10.0.24.71/24
+- name: mgmt0
+  internal:
+  type: static
+  cidr: 192.168.12.71/24
+- name: ext0
+  internal:
+  type: static
+  cidr: 10.120.94.1/26
+  gw: 10.120.94.62
+  enabled: no
+  state: stopped
+

@@ -1,0 +1,87 @@
+# LIST OF AVAILABLE DEVICES
+
+{% for host in groups['storage_devices'] %}
+# -- {{ host }} --
+{% for line in hostvars[host].lsblk.stdout_lines %}
+#{{ line }}
+{% endfor %}
+
+{% endfor %}
+
+#  can be specified with all the units supported by parted (except compat) and it is case sensitive, e.g. 10GiB, 15%
+# partitions:
+# - device: /dev/sdd
+#   label: PARTLABEL # optional
+#   num: 1
+#   start: 0%
+#   end: 10%
+# - device: /dev/sdd
+#   num: 2
+#   start: 10%
+#   end: 100%
+
+
+
+# lvm configuration 
+# 
+# volume groups named 'osdX' (e.g. osd0, osd1 ...) would be used for CEPH OSD
+# these VG must contain only LVs for bluestore OSD 'data' LV is required,
+# 'wal' and 'db' are optional
+#
+# General recomendation - place devices for particular OSD (DATA,WAL,DB) in separate VG,
+# then create volumes dedicated to coresponding physical volumes
+#
+# Separate volumes for WAL and DB have benefits only if placed on faster media. In lack of space on fast media you should
+# prefer WAL separation over DB
+#
+# Recomendation on sizing:
+#   - WAL volume should be not less then 1G
+#   - DB volume should have 1% to 2% of DATA for RBD workload (4% for RGW)
+
+# example of configuration
+
+# vgs:
+
+# - vg: osd0
+#   pvs:
+#   - /dev/sdb
+#   - /dev/sdd1
+
+# - vg: osd1
+#   pvs:
+#   - /dev/sdc
+#   - /dev/sdd2
+
+
+# size of volume, according to lvcreate(8) --size, by default in megabytes or optionally with one of [bBsSkKmMgGtTpPeE] units;
+# or according to lvcreate(8) --extents as a percentage of [VG|PVS|FREE];
+# Float values must begin with a digit.
+# 
+# lvs:
+# 
+# - lv: data
+#   size: 100%PVS
+#   vg: osd0
+#   pvs: /dev/sdb
+#
+# - lv: wal
+#   size: 100%PVS
+#   vg: osd0
+#   pvs: /dev/sdd1
+# 
+# - lv: data
+#   size: 85%PVS
+#   vg: osd1
+#   pvs: /dev/sdc
+# 
+# - lv: wal
+#   size: 1%PVS
+#   vg: osd1
+#   pvs: /dev/sdd2
+# 
+# - lv: DB
+#   size: 2%PVS
+#   vg: osd1
+#   pvs: /dev/sdd2
+# 
+

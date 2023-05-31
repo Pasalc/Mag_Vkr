@@ -1,0 +1,14 @@
+---
+
+- name: generate NIC list
+  set_fact:
+    nic_list: "{{ ( (nics_local | default([])) | union(nics | default([])) ) | list }}"
+
+- name: bring down interfaces to be unconfigured
+  include_tasks: interfaces_down.yaml
+  when: deconfigure is defined
+
+
+- name: bring up interfaces
+  include_tasks: interfaces_up.yaml
+  when: deconfigure is not defined

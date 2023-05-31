@@ -1,0 +1,62 @@
+all:
+  hosts:
+    h11:
+      user: root
+      ansible_host: 172.16.14.11
+    h12:
+      user: root
+      ansible_host: 172.16.14.12
+    h13:
+      user: root
+      ansible_host: 172.16.14.13
+    h14:
+      user: root
+      ansible_host: 172.16.14.14
+    h15:
+      user: root
+      ansible_host: 172.16.14.15
+    h16:
+      user: root
+      ansible_host: 172.16.14.16
+    h17:
+      user: root
+      ansible_host: 172.16.14.17
+    h18:
+      user: root
+      ansible_host: 172.16.14.18
+    h19:
+      user: root
+      ansible_host: 172.16.14.19
+
+  children:
+    ntp:
+      hosts:
+        h[11:19]:
+    net:
+      hosts:
+        h[11:19]:
+    mons:
+      hosts:
+        h11:
+        h18:
+        h19:
+    mgrs:
+      hosts:
+        h11:
+        h18:
+        h19:
+    osds:
+      hosts:
+        h[11:19]:
+    storage_devices:
+      children:
+        local_lvm:
+          hosts:
+            h[11:19]:
+        # shared_lvm:
+        #   children:
+        #     sslvm_0:
+        #       hosts:
+        #         serv109:
+        #         serv110:
+            

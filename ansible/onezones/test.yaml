@@ -11,6 +11,11 @@
         state: directory
         owner: oneadmin
         group: oneadmin
+    - name: Add docker to autostart
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
     - name: Start Container 
       docker_container:
         name: "{{ container_name }}"
@@ -24,32 +29,50 @@
           - /var/tmp:/var/tmp
         pull: false
         state: started
+  tags: docker_init
 - name: Setup master zone
   hosts: master
   gather_facts: no
   vars_files:
     - defaults/main.yaml
   tasks:
-    - name: Configure /etc/one/oned.conf
-      include_role: 
-        name: oned_configure
-    - name: Restart oned
-      include_role:
-        name: oned_restart
-    - name: Update zones endpoints
-      include_role:
-        name: endpoint_update
+    - block:
+      - name: Configure /etc/one/oned.conf
+        include_role: 
+          name: oned_configure
+      - name: Restart oned
+        include_role:
+          name: oned_restart
+      tags: configure_oned
+    - block:
+      - name: Update zones endpoints
+        include_role:
+          name: endpoint_update
+        vars:
+          zone_name: "{{ hostvars[item]['zone'] | default(item) }}"
+          endpoint_ip: "{{ hostvars[item]['endpoint'] | default(hostvars[item]['ansible_host']) }}"
+          host_name: "{{ item }}"
+        loop: "{{ groups['slaves'] }} + {{ groups['master'] }}"
+      tags: update_zones
+    - block:
+      - name: Backup federation table to host
+        include_role:
+          name: federationDB_backup
+      - name: Fetch .one from remote to localhost
+        include_role:
+          name: dotOneToHost
+      - name: Fetch table from remote to localhost
+        fetch:
+          src: "{{ fedDB_path }}"
+          dest: "{{ fedDB_path_local }}"
+          flat: true
+      tags: federation_fetch
+    - name: Set zone_id for all hosts
+      include: tasks/setZonesID.yaml
       vars:
         zone_name: "{{ hostvars[item]['zone'] | default(item) }}"
-        endpoint_ip: "{{ hostvars[item]['endpoint'] | default(hostvars[item]['ansible_host']) }}"
         host_name: "{{ item }}"
       loop: "{{ groups['slaves'] }} + {{ groups['master'] }}"
-    - name: Backup federation table to host
-      include_role:
-        name: federationDB_backup
-    - name: Fetch /var/lib/one/.one from docker to localhost
-      include_role:
-        name: dotOneToHost
 - name: Setup slave zones
   hosts: slaves
   gather_facts: no
